@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kahve Sipariş Sistemi (Demo)</title>
+  <meta name="color-scheme" content="light dark">
+  <link rel="preload" href="assets/img/background.jpg" as="image">
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <div class="site-bg" aria-hidden="true"></div>
+
+  <header class="site-header container">
+    <a class="brand" href="#" data-nav="store">
+      <img class="brand__logo" src="assets/img/logo.svg" alt="">
+      <span class="brand__title">Kahve</span>
+    </a>
+
+    <nav class="top-nav">
+      <button id="themeToggle" class="icon-btn" aria-label="Temayı değiştir"><span class="icon"></span></button>
+
+      <div id="authArea" class="auth-area"></div>
+
+      <!-- Rol bazlı: müşteri=Sepet (çekmece), üretici=Siparişler (sayfa) -->
+      <button id="panelToggle" class="btn btn--ghost cart-pill" aria-haspopup="dialog" aria-controls="mainDrawer">
+        <span id="panelLabel">Sepet</span> <span id="panelBadge" class="badge">0</span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- ========== GİRİŞ ========== -->
+    <section id="viewAuth" class="view">
+      <div class="auth-tabs">
+        <button class="tab is-active" data-tab="buyer">Müşteri Girişi (Telefon)</button>
+        <button class="tab" data-tab="producer">Üretici Girişi (Kullanıcı/Şifre)</button>
+      </div>
+
+      <div class="auth-panels">
+        <form id="buyerForm" class="panel is-active" onsubmit="return false">
+          <h2 class="h4">Müşteri Girişi</h2>
+          <label class="control">
+            <span>Telefon Numarası</span>
+            <input id="buyerPhone" type="tel" placeholder="5xx xxx xx xx" required>
+          </label>
+          <button id="buyerLoginBtn" class="btn btn--primary">Devam Et</button>
+          <p class="muted fs-sm">Demo: OTP yok; üretimde SMS OTP ekleyiniz.</p>
+        </form>
+
+        <form id="producerForm" class="panel is-hidden" onsubmit="return false">
+          <h2 class="h4">Üretici Girişi</h2>
+          <label class="control">
+            <span>Kullanıcı Adı</span>
+            <input id="producerUser" type="text" placeholder="producer" required>
+          </label>
+          <label class="control">
+            <span>Şifre</span>
+            <input id="producerPass" type="password" placeholder="1234" required>
+          </label>
+          <button id="producerLoginBtn" class="btn btn--primary">Giriş Yap</button>
+          <p class="muted fs-sm">Demo: <code>producer / 1234</code></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ========== MAĞAZA ========== -->
+    <section id="viewStore" class="view is-hidden">
+      <div class="controls">
+        <nav class="site-nav" aria-label="Kategoriler">
+          <button class="btn btn--ghost is-active" data-filter="all">Tümü</button>
+          <button class="btn btn--ghost" data-filter="afrika">Afrika</button>
+          <button class="btn btn--ghost" data-filter="amerika">Orta & Güney Amerika</button>
+          <button class="btn btn--ghost" data-filter="asya">Asya & Pasifik</button>
+          <button class="btn btn--ghost" data-filter="ozel">Özel</button>
+        </nav>
+      </div>
+
+      <section id="cards" class="grid">
+        <article class="card" data-cat="afrika" data-step-grams="100" data-max-kg="5">
+          <figure class="card__media"></figure>
+          <h3 class="h4">Etiyopya Yirgacheffe</h3>
+          <p>Çiçeksi, narenciye; hafif gövde, parlak asidite.</p>
+          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
+        </article>
+
+        <article class="card" data-cat="afrika">
+          <figure class="card__media"></figure>
+          <h3 class="h4">Kenya AA</h3>
+          <p>Siyah frenk üzümü, limon; canlı asidite.</p>
+          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
+        </article>
+
+        <article class="card" data-cat="afrika">
+          <figure class="card__media"></figure>
+          <h3 class="h4">Tanzanya Peaberry</h3>
+          <p>Dengeli, tatlı, meyvemsi bitiş.</p>
+          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
+        </article>
+
+        <article class="card" data-cat="amerika">
+          <figure class="card__media"></figure>
+          <h3 class="h4">Kolombiya Supremo</h3>
+          <p>Karamel, fındık; dengeli gövde.</p>
+          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
+        </article>
+
+        <article class="card" data-cat="amerika">
+          <figure class="card__media"></figure>
+          <h3 class="h4">Brezilya Santos</h3>
+          <p>Çikolata, fındık; düşük asidite.</p>
+          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
+        </article>
+
+        <article class="card" data-cat="amerika">
+          <figure class="card__media"></figure>
+          <h3 class="h4">Guatemala Antigua</h3>
+          <p>Kakao, baharat; parlak asidite.</p>
+          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
+        </article>
+
+        <article class="card" data-cat="amerika">
+          <figure class="card__media"></figure>
+          <h3 class="h4">Kosta Rika Tarrazú</h3>
+          <p>Narenciye, bal; temiz bitiş.</p>
+          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
+        </article>
+
+        <article class="card" data-cat="asya">
+          <figure class="card__media"></figure>
+          <h3 class="h4">Sumatra Mandheling</h3>
+          <p>Toprak tonları, koyu çikolata; düşük asidite.</p>
+          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
+        </article>
+
+        <article class="card" data-cat="asya">
+          <figure class="card__media"></figure>
+          <h3 class="h4">Hindistan Monsooned Malabar</h3>
+          <p>Yoğun gövde, baharat notaları; düşük asidite.</p>
+          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
+        </article>
+
+        <article class="card" data-cat="asya">
+          <figure class="card__media"></figure>
+          <h3 class="h4">Papua Yeni Gine</h3>
+          <p>Meyvemsi, çiçeksi; dengeli gövde.</p>
+          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
+        </article>
+
+        <article class="card" data-cat="ozel">
+          <figure class="card__media"></figure>
+          <h3 class="h4">Panama Geisha</h3>
+          <p>Yasemin, bergamot; kompleks, nadir.</p>
+          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
+        </article>
+
+        <article class="card" data-cat="ozel">
+          <figure class="card__media"></figure>
+          <h3 class="h4">Yemen Mocha</h3>
+          <p>Şarap benzeri gövde, kakao ve kırmızı meyve.</p>
+          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
+        </article>
+      </section>
+    </section>
+
+    <!-- ========== MÜŞTERİ: SİPARİŞLERİM ========== -->
+    <section id="viewMyOrders" class="view is-hidden">
+      <header class="view-head">
+        <h2 class="h4">Siparişlerim</h2>
+      </header>
+
+      <div class="tabs" id="myOrdersTabs">
+        <button class="tab is-active" data-mtab="active">Aktif</button>
+        <button class="tab" data-mtab="past">Geçmiş</button>
+        <button class="tab" data-mtab="all">Tümü</button>
+      </div>
+
+      <div id="myOrdersList" class="stack"></div>
+    </section>
+
+    <!-- ========== ÜRETİCİ: SİPARİŞLER & KATALOG (SAYFA İÇİ) ========== -->
+    <section id="viewDashboard" class="view is-hidden">
+      <div class="tabs" id="dashTabs">
+        <button class="tab is-active" data-dtab="orders">Siparişler</button>
+        <button class="tab" data-dtab="catalog">Katalog</button>
+      </div>
+
+      <!-- Siparişler paneli -->
+      <div id="dOrders" class="panel">
+        <div class="tabs" id="ordersStatusTabs">
+          <button class="tab is-active" data-ostatus="pending">Yeni Siparişler</button>
+          <button class="tab" data-ostatus="approved">Onaylanan</button>
+          <button class="tab" data-ostatus="preparing">Hazırlanan</button>
+          <button class="tab" data-ostatus="in_transit">Sevkiyatta</button>
+          <button class="tab" data-ostatus="delivered">Teslim Edildi</button>
+        </div>
+        <div id="prodOrdersList" class="stack"></div>
+      </div>
+
+      <!-- Katalog paneli -->
+      <div id="dCatalog" class="panel is-hidden">
+        <h2 class="h4">Ürün Fiyat & Stok</h2>
+        <p class="muted fs-sm">₺/kg ve stok (gram) bilgilerini güncelle ve kaydet. Mağaza anlık güncellenir.</p>
+        <div id="catalogTableWrap"></div>
+        <div class="row mt-1">
+          <button id="saveCatalogBtn" class="btn btn--primary">Kataloğu Kaydet</button>
+          <span id="catalogSavedNote" class="muted"></span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ÜRÜN MİKTAR MODAL -->
+  <div id="qtyModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" inert>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__panel">
+      <header class="modal__header">
+        <h3 class="h4" id="qtyTitle">Ürün Ekle</h3>
+        <button class="icon-btn" data-close-modal aria-label="Kapat">✕</button>
+      </header>
+      <div class="modal__body">
+        <div class="modal__product">
+          <img id="qtyImg" alt="">
+          <div>
+            <div id="qtyName" class="modal__name"></div>
+            <div id="qtyDesc" class="modal__desc"></div>
+            <div class="muted fs-sm">Birim fiyat: <strong id="qtyUnitPrice"></strong> / kg</div>
+            <div class="muted fs-sm">Stok: <strong id="qtyStockText"></strong></div>
+          </div>
+        </div>
+
+        <label class="control w-100">
+          <div class="row">
+            <span>Miktar</span>
+            <strong><span id="qtyLabel">0</span> g (<span id="qtyKg">0</span> kg)</strong>
+          </div>
+          <input id="qtyRange" type="range" min="100" max="5000" step="100" />
+        </label>
+
+        <div id="qtyWarn" class="note warn is-hidden">
+          Seçilen miktar mevcut stoktan fazla. Bu sipariş için <strong>üretim süresi değerlendirilecektir.</strong>
+        </div>
+
+        <div class="calc">
+          <div>Satır Tutarı</div>
+          <div><strong id="qtyLineTotal">₺0,00</strong></div>
+        </div>
+      </div>
+      <footer class="modal__footer">
+        <button class="btn" id="addToCartBtn">Sepete Ekle</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- MÜŞTERİ ÇEKMECESİ (yalnızca müşteri) -->
+  <aside id="mainDrawer" class="drawer" aria-hidden="true" role="dialog" inert>
+    <div class="drawer__backdrop" data-close-drawer></div>
+    <div class="drawer__panel">
+      <header class="drawer__header">
+        <h3 class="h4" id="drawerTitle">Sepet</h3>
+        <button class="icon-btn" data-close-drawer aria-label="Kapat">✕</button>
+      </header>
+      <div class="drawer__body"><div id="cartBody"></div></div>
+      <footer class="drawer__footer" id="buyerFooter">
+        <div class="calc"><div>Toplam</div><div><strong id="cartTotalPrice">₺0,00</strong></div></div>
+        <button id="confirmOrderBtn" class="btn btn--primary">Onayla</button>
+        <span class="muted fs-sm">Ödeme alınmaz; üreticiye bildirim gider ve durum takibi başlar.</span>
+      </footer>
+    </div>
+  </aside>
+
+  <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
+
+  <footer class="site-footer container">
+    <small>© <span id="year"></span> Kahve • Demo</small>
+  </footer>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
