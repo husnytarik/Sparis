@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="tr">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,10 +7,10 @@
   <meta name="color-scheme" content="light dark">
   <link rel="preload" href="assets/img/background.jpg" as="image">
   <link rel="stylesheet" href="assets/css/styles.css" />
+  <!-- Favicon -->
   <link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
   <link rel="alternate icon" href="assets/img/favicon.png" sizes="32x32">
 </head>
-
 <body>
   <div class="site-bg" aria-hidden="true"></div>
 
@@ -81,91 +80,8 @@
         </nav>
       </div>
 
-      <section id="cards" class="grid">
-        <article class="card" data-cat="afrika" data-step-grams="100" data-max-kg="5">
-          <figure class="card__media"></figure>
-          <h3 class="h4">Etiyopya Yirgacheffe</h3>
-          <p>Çiçeksi, narenciye; hafif gövde, parlak asidite.</p>
-          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
-        </article>
-
-        <article class="card" data-cat="afrika">
-          <figure class="card__media"></figure>
-          <h3 class="h4">Kenya AA</h3>
-          <p>Siyah frenk üzümü, limon; canlı asidite.</p>
-          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
-        </article>
-
-        <article class="card" data-cat="afrika">
-          <figure class="card__media"></figure>
-          <h3 class="h4">Tanzanya Peaberry</h3>
-          <p>Dengeli, tatlı, meyvemsi bitiş.</p>
-          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
-        </article>
-
-        <article class="card" data-cat="amerika">
-          <figure class="card__media"></figure>
-          <h3 class="h4">Kolombiya Supremo</h3>
-          <p>Karamel, fındık; dengeli gövde.</p>
-          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
-        </article>
-
-        <article class="card" data-cat="amerika">
-          <figure class="card__media"></figure>
-          <h3 class="h4">Brezilya Santos</h3>
-          <p>Çikolata, fındık; düşük asidite.</p>
-          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
-        </article>
-
-        <article class="card" data-cat="amerika">
-          <figure class="card__media"></figure>
-          <h3 class="h4">Guatemala Antigua</h3>
-          <p>Kakao, baharat; parlak asidite.</p>
-          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
-        </article>
-
-        <article class="card" data-cat="amerika">
-          <figure class="card__media"></figure>
-          <h3 class="h4">Kosta Rika Tarrazú</h3>
-          <p>Narenciye, bal; temiz bitiş.</p>
-          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
-        </article>
-
-        <article class="card" data-cat="asya">
-          <figure class="card__media"></figure>
-          <h3 class="h4">Sumatra Mandheling</h3>
-          <p>Toprak tonları, koyu çikolata; düşük asidite.</p>
-          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
-        </article>
-
-        <article class="card" data-cat="asya">
-          <figure class="card__media"></figure>
-          <h3 class="h4">Hindistan Monsooned Malabar</h3>
-          <p>Yoğun gövde, baharat notaları; düşük asidite.</p>
-          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
-        </article>
-
-        <article class="card" data-cat="asya">
-          <figure class="card__media"></figure>
-          <h3 class="h4">Papua Yeni Gine</h3>
-          <p>Meyvemsi, çiçeksi; dengeli gövde.</p>
-          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
-        </article>
-
-        <article class="card" data-cat="ozel">
-          <figure class="card__media"></figure>
-          <h3 class="h4">Panama Geisha</h3>
-          <p>Yasemin, bergamot; kompleks, nadir.</p>
-          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
-        </article>
-
-        <article class="card" data-cat="ozel">
-          <figure class="card__media"></figure>
-          <h3 class="h4">Yemen Mocha</h3>
-          <p>Şarap benzeri gövde, kakao ve kırmızı meyve.</p>
-          <div class="price-row"><span class="price" data-price></span><span class="stock" data-stock></span></div>
-        </article>
-      </section>
+      <!-- Kartlar JS ile çizilir -->
+      <section id="cards" class="grid"></section>
     </section>
 
     <!-- ========== MÜŞTERİ: SİPARİŞLERİM ========== -->
@@ -205,8 +121,43 @@
       <!-- Katalog paneli -->
       <div id="dCatalog" class="panel is-hidden">
         <h2 class="h4">Ürün Fiyat & Stok</h2>
-        <p class="muted fs-sm">₺/kg ve stok (gram) bilgilerini güncelle ve kaydet. Mağaza anlık güncellenir.</p>
+        <p class="muted fs-sm">
+          ₺/kg ve stok (gram) bilgilerini güncelle. Yeni ürün ekleyip/çıkarabilirsin.
+          Görsel için <strong>slug</strong> ile aynı adlı dosyayı <code>assets/img/products/</code> içine koy (ör. <code>kolombiya-supremo.jpg</code>).
+        </p>
+
+        <!-- Yeni ürün formu -->
+        <div class="catalog-add row wrap">
+          <label class="control grow">
+            <span>Ürün Adı</span>
+            <input id="newName" type="text" placeholder="Örn. Peru Cajamarca">
+          </label>
+          <label class="control">
+            <span>Kategori</span>
+            <select id="newCat">
+              <option value="afrika">Afrika</option>
+              <option value="amerika">Orta & Güney Amerika</option>
+              <option value="asya">Asya & Pasifik</option>
+              <option value="ozel" selected>Özel</option>
+            </select>
+          </label>
+          <label class="control">
+            <span>₺/kg</span>
+            <input id="newPrice" type="number" min="0" step="10" value="0">
+          </label>
+          <label class="control">
+            <span>Stok (g)</span>
+            <input id="newStock" type="number" min="0" step="50" value="0">
+          </label>
+          <label class="control grow">
+            <span>Açıklama (opsiyonel)</span>
+            <input id="newDesc" type="text" placeholder="Tat notları vb.">
+          </label>
+          <button id="addProductBtn" class="btn btn--primary" style="align-self:end">Ekle</button>
+        </div>
+
         <div id="catalogTableWrap"></div>
+
         <div class="row mt-1">
           <button id="saveCatalogBtn" class="btn btn--primary">Kataloğu Kaydet</button>
           <span id="catalogSavedNote" class="muted"></span>
@@ -266,7 +217,7 @@
         <button class="icon-btn" data-close-drawer aria-label="Kapat">✕</button>
       </header>
       <div class="drawer__body">
-        <!-- YENİ: Teslimat/mağaza metni -->
+        <!-- Teslimat/mağaza metni -->
         <label class="control">
           <span>Teslimat / Mağaza</span>
           <input id="storeNameInput" type="text" placeholder="Mağaza/şube adı veya teslim notu">
@@ -275,10 +226,7 @@
         <div id="cartBody"></div>
       </div>
       <footer class="drawer__footer" id="buyerFooter">
-        <div class="calc">
-          <div>Toplam</div>
-          <div><strong id="cartTotalPrice">₺0,00</strong></div>
-        </div>
+        <div class="calc"><div>Toplam</div><div><strong id="cartTotalPrice">₺0,00</strong></div></div>
         <button id="confirmOrderBtn" class="btn btn--primary">Onayla</button>
         <span class="muted fs-sm">Ödeme alınmaz; üreticiye bildirim gider ve durum takibi başlar.</span>
       </footer>
@@ -293,5 +241,4 @@
 
   <script src="assets/js/app.js"></script>
 </body>
-
 </html>
