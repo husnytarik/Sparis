@@ -261,7 +261,15 @@
         <h3 class="h4" id="drawerTitle">Sepet</h3>
         <button class="icon-btn" data-close-drawer aria-label="Kapat">✕</button>
       </header>
-      <div class="drawer__body"><div id="cartBody"></div></div>
+      <div class="drawer__body">
+        <!-- YENİ: Teslimat/mağaza metni -->
+        <label class="control">
+          <span>Teslimat / Mağaza</span>
+          <input id="storeNameInput" type="text" placeholder="Mağaza/şube adı veya teslim notu">
+        </label>
+
+        <div id="cartBody"></div>
+      </div>
       <footer class="drawer__footer" id="buyerFooter">
         <div class="calc"><div>Toplam</div><div><strong id="cartTotalPrice">₺0,00</strong></div></div>
         <button id="confirmOrderBtn" class="btn btn--primary">Onayla</button>

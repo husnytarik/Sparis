@@ -210,6 +210,7 @@ const panelToggle = $('#panelToggle');
 const mainDrawer = $('#mainDrawer');
 const cartBody = $('#cartBody');
 const cartTotalPriceEl = $('#cartTotalPrice');
+const storeNameInput = $('#storeNameInput');
 let lastFocusDrawer = null;
 
 panelToggle.addEventListener('click', ()=>{
@@ -227,6 +228,8 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape' && mainDrawer.getA
 
 function openMainDrawer(){
   lastFocusDrawer = document.activeElement;
+  // Son kullanılan mağaza adını getir
+  storeNameInput.value = localStorage.getItem('storeName') || '';
   renderCart();
   mainDrawer.removeAttribute('inert'); mainDrawer.setAttribute('aria-hidden','false');
   document.body.style.overflow='hidden';
@@ -238,6 +241,9 @@ function closeMainDrawer(){
   document.body.style.overflow='';
   if(lastFocusDrawer && document.contains(lastFocusDrawer)) lastFocusDrawer.focus();
 }
+
+// mağaza adı değişince sakla
+storeNameInput.addEventListener('change', ()=> localStorage.setItem('storeName', storeNameInput.value.trim()));
 
 // ===== Cart =====
 let cart = loadCart();
@@ -291,11 +297,16 @@ $('#confirmOrderBtn').addEventListener('click', ()=>{
   if(!session || session.role!=='buyer'){ toast('Sipariş için önce müşteri girişi yapınız.','warn'); showView(viewAuth); return; }
   if(cart.length===0){ toast('Sepet boş.','warn'); return; }
 
+  // Mağaza / teslimat metni
+  const storeName = (storeNameInput.value || '').trim();
+  localStorage.setItem('storeName', storeName);
+
   const orderId = 'ORD-' + Date.now().toString(36);
   const total = cartTotal();
   const order = {
     id: orderId,
     buyerPhone: normalizePhone(session.phone),
+    storeName, // <<< YENİ
     items: cart,
     totalPrice: total,
     status: 'pending', // pending → approved → preparing → in_transit → delivered
@@ -304,9 +315,11 @@ $('#confirmOrderBtn').addEventListener('click', ()=>{
   };
   const orders = loadOrders(); orders.unshift(order); saveOrders(orders);
 
-  notifySMS('producer', `Yeni sipariş: ${orderId} • ${fmtTL(total)}`);
+  // bildirimler (storeName’i ekle)
+  const suffix = storeName ? ` • ${storeName}` : '';
+  notifySMS('producer', `Yeni sipariş: ${orderId} • ${fmtTL(total)}${suffix}`);
   notifyInApp('Üreticiye yeni sipariş bildirildi.');
-  notifySMS(session.phone, `Siparişiniz alındı: ${orderId} • ${fmtTL(total)}`);
+  notifySMS(session.phone, `Siparişiniz alındı: ${orderId} • ${fmtTL(total)}${suffix}`);
 
   toast('Sipariş onaylandı. Durum takibi ekranına geçiliyor...');
   clearCart();
@@ -350,7 +363,11 @@ function renderMyOrders(filter='active'){
     const div = document.createElement('div'); div.className='panel';
     div.innerHTML = `
       <div class="row"><strong>${o.id}</strong><span>${fmtTL(o.totalPrice)}</span></div>
-      <div class="row"><span class="status status--${o.status}">${labelStatus(o.status)}</span><span class="muted fs-sm">Oluşturma: ${fmtDT(o.timeline[0]?.t || Date.now())}</span></div>
+      <div class="row">
+        <span class="status status--${o.status}">${labelStatus(o.status)}</span>
+        <span class="muted fs-sm">Oluşturma: ${fmtDT(o.timeline[0]?.t || Date.now())}</span>
+      </div>
+      ${o.storeName ? `<div class="note mt-1">Teslimat / Mağaza: <strong>${o.storeName}</strong></div>` : ''}
       <div class="stack mt-1">
         ${o.items.map(i=>`<div class="row"><span>${i.name} — ${i.grams} g</span><span>${fmtTL(i.line)}</span></div>`).join('')}
       </div>
@@ -374,8 +391,16 @@ dashTabs.addEventListener('click', (e)=>{
 });
 function selectDashTab(which='orders'){
   const ordersPanel = $('#dOrders'), catalogPanel = $('#dCatalog');
-  if(which==='catalog'){ ordersPanel.classList.add('is-hidden'); catalogPanel.classList.remove('is-hidden'); }
-  else { catalogPanel.classList.add('is-hidden'); ordersPanel.classList.remove('is-hidden'); }
+  if(which==='catalog'){
+    ordersPanel.classList.add('is-hidden');
+    catalogPanel.classList.remove('is-hidden');
+    // <<< Katalog tabı açılınca tabloyu oluştur
+    renderCatalogTable();
+  }else{
+    catalogPanel.classList.add('is-hidden');
+    ordersPanel.classList.remove('is-hidden');
+    renderProducerOrdersStatus(currentProdStatus);
+  }
 }
 
 // ===== Producer: Order Status Tabs & List =====
@@ -407,6 +432,7 @@ function renderProducerOrdersStatus(status='pending'){
         <span class="muted fs-sm">Müşteri: ${buyerMasked}</span>
         <span class="status status--${o.status}">${labelStatus(o.status)}</span>
       </div>
+      ${o.storeName ? `<div class="note mt-1">Teslimat / Mağaza: <strong>${o.storeName}</strong></div>` : ''}
       <div class="order-lines">
         ${o.items.map(i=>`<div class="row"><span>${i.name} — ${i.grams} g</span><span>${fmtTL(i.line)}</span></div>`).join('')}
       </div>
