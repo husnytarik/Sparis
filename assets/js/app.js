@@ -51,7 +51,7 @@ let CATALOG = loadCatalog();
 // ===== Product Cards =====
 function slugify(str=''){ return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
 function attachAutoImage(container, baseName, explicitPath=null){
-  const fallback = 'assets/img/products/_placeholder.svg';
+  const fallback = 'assets/img/products/placeholder.svg';
   const list = explicitPath ? [explicitPath] : [
     `assets/img/products/${baseName}.webp`,
     `assets/img/products/${baseName}.jpg`,
@@ -177,7 +177,7 @@ function openQtyModal(card, meta){
   const desc = card.querySelector('p')?.textContent.trim() || '';
   qtyName.textContent = meta.name; qtyDesc.textContent = desc;
   qtyUnitPrice.textContent = fmtTL(meta.price);
-  qtyImg.src = card.querySelector('.card__media img')?.src || 'assets/img/products/_placeholder.svg';
+  qtyImg.src = card.querySelector('.card__media img')?.src || 'assets/img/products/placeholder.svg';
   qtyStockText.textContent = `${gToKgText(meta.stock)} (${meta.stock} g)`;
   const step = parseInt(card.getAttribute('data-step-grams') || '100',10);
   const maxKg = parseInt(card.getAttribute('data-max-kg') || '5',10);
