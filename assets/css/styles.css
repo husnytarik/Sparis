@@ -11,18 +11,21 @@
   --bg:#f3f5f7; --surface:#fff; --text:#1f2937; --muted:#475569; --brand:#2563eb; --border:#e6e7eb; --bg-overlay:rgba(255,255,255,.55);
 }
 
+/* Reset & layout */
 *{box-sizing:border-box}
 html,body{max-width:100%;overflow-x:hidden}
 body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:var(--bg);line-height:1.55}
 .container{width:min(100% - 1rem, var(--maxw));margin-inline:auto}
 .site-bg{position:fixed;inset:0;background:linear-gradient(var(--bg-overlay),var(--bg-overlay)),center/cover no-repeat url("../img/background.jpg");filter:blur(var(--bg-blur));transform:scale(1.02);z-index:-1}
 
-/* Header */
-.site-header{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:1rem 0 .75rem;flex-wrap:wrap}
+/* Header (logo büyük, bar altta) */
+.site-header{display:grid;grid-template-columns:1fr;justify-items:center;gap:.35rem;padding:1rem 0 .75rem}
 .brand{display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;color:inherit}
-.brand__logo{width:40px;height:40px;display:block}
-.brand__title{font-weight:700;font-size:var(--fs-500);letter-spacing:.2px}
-.top-nav{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;justify-content:flex-end;flex:1 1 360px}
+.brand__logo{width:64px;height:64px;display:block}
+.brand__title{font-weight:700;font-size:var(--fs-600);letter-spacing:.2px}
+.header-bar{
+  width:100%;display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:.25rem
+}
 .auth-area{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 
 /* Buttons */
@@ -39,9 +42,20 @@ body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,
 .view{display:block}
 .is-hidden{display:none !important}
 .view-head{display:flex;justify-content:space-between;align-items:center;margin:.5rem 0 1rem}
+.h4{font-size:var(--fs-600);margin:.2rem 0}
+
+/* Kategori üstü müşteri paneli */
+.customer-bar{
+  display:flex;align-items:center;justify-content:center;gap:.6rem;flex-wrap:wrap;
+  padding:.6rem .8rem;margin:.5rem 0 1rem;
+  border:1px solid var(--border);border-radius:12px;
+  background:color-mix(in srgb, var(--surface) 90%, transparent);
+  box-shadow:var(--shadow)
+}
+.customer-bar .customer-id{font-weight:700}
 
 /* Tabs / Panels */
-.tabs,.auth-tabs{display:flex;gap:.5rem;margin:.5rem 0 1rem;flex-wrap:wrap}
+.tabs,.auth-tabs{display:flex;gap:.5rem;margin:.5rem 0 1rem;flex-wrap:wrap;justify-content:center}
 .tab{border:1px solid var(--border);background:transparent;color:var(--text);padding:.5rem .9rem;border-radius:12px;cursor:pointer}
 .tab.is-active{border-color:var(--brand)}
 .panel{border:1px solid var(--border);border-radius:16px;padding:1rem;background:color-mix(in srgb, var(--surface) 90%, transparent);max-width:100%}
@@ -56,16 +70,15 @@ body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,
 .fs-sm{font-size:var(--fs-300)}
 .mt-1{margin-top:1rem}
 
-/* Filters */
+/* Filtre/üst kontroller */
 .controls{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;padding:1rem;background:color-mix(in srgb, var(--surface) 80%, transparent);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin:1rem 0}
-.site-nav{display:flex;gap:.5rem;flex-wrap:wrap}
+.site-nav{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
 
-/* Grid & Cards – responsive auto-fit (iPhone 11'de 2 sütun; dar ekranda tek sütun) */
+/* Grid & Cards – responsive auto-fit */
 .grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:1rem}
 .card{background:color-mix(in srgb, var(--surface) 92%, transparent);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow);cursor:pointer;transition:transform .12s ease,border-color .2s ease}
 .card:hover{transform:translateY(-2px);border-color:var(--brand)}
 .card p{color:var(--muted);margin:.25rem 0 0}
-
 .card__media{margin:0 0 .75rem;border-radius:calc(var(--radius) - 4px);overflow:hidden;border:1px solid var(--border);background:color-mix(in srgb, var(--surface) 85%, transparent);aspect-ratio:16/10;display:grid;place-items:center}
 .card__media img{width:100%;height:100%;object-fit:cover;display:block}
 .price-row{display:flex;justify-content:space-between;align-items:center;margin-top:.6rem;gap:.6rem}
@@ -83,7 +96,7 @@ body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,
 .timeline li{padding:.25rem .5rem .25rem .75rem;margin-left:.5rem;color:var(--muted)}
 .timeline time{opacity:.8}
 
-/* Notes / warnings */
+/* Not/uyarı */
 .note{border:1px dashed var(--border);border-radius:10px;padding:.6rem .7rem;background:color-mix(in srgb, var(--surface) 95%, transparent)}
 .warn{border-color:#f59e0b;color:#f59e0b}
 
@@ -101,7 +114,7 @@ body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,
 .modal__desc{color:var(--muted)}
 .calc{display:flex;justify-content:space-between;align-items:center;border-top:1px dashed var(--border);padding-top:.5rem;margin-top:.25rem}
 
-/* Drawer (Cart only) */
+/* Drawer (Sepet / Gelen siparişler) */
 .drawer{position:fixed;inset:0;display:none;z-index:45}
 .drawer[aria-hidden="false"]{display:block}
 .drawer__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.4)}
@@ -125,13 +138,24 @@ body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,
 /* Stacks */
 .stack{display:grid;gap:.8rem}
 
-/* Tables (responsive – sayfayı taşırmaz) */
+/* Tables (responsive) */
 #catalogTableWrap{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
 .table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:0}
 .table th,.table td{border:1px solid var(--border);padding:.6rem .7rem;vertical-align:top}
 .table th{background:color-mix(in srgb, var(--surface) 90%, transparent);text-align:left}
 .table input,.table select{width:100%}
-.table td:nth-child(2){word-break:break-all} /* slug uzunlukları */
+
+/* Katalog: mobil kart görünümü */
+.catalog-cards{ display:none; }
+.catalog-card{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:.9rem;
+  background:color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow:var(--shadow);
+}
+.catalog-card .row{ gap:.5rem; }
+.catalog-card .actions{ display:flex; justify-content:flex-end; }
 
 /* Toast */
 .toast{position:fixed;right:16px;bottom:16px;display:grid;gap:.5rem;z-index:60}
@@ -153,9 +177,13 @@ body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,
 /* Focus */
 :where(a,button,input,select):focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 
-/* Mobile tweaks */
+/* Responsive tweaks */
+@media (max-width: 640px){
+  /* Katalog: küçük ekranda tabloyu gizle, kartları göster */
+  #catalogTableWrap{ display:none; }
+  .catalog-cards{ display:grid; gap:.8rem; }
+}
 @media (max-width: 480px){
-  .brand{width:100%;justify-content:center}
-  .top-nav{width:100%;justify-content:center}
-  .auth-area{width:100%;justify-content:center}
+  .brand__logo{width:54px;height:54px}
+  .auth-area{justify-content:center}
 }

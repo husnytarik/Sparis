@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="tr">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,26 +12,29 @@
   <link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
   <link rel="alternate icon" href="assets/img/favicon.png" sizes="32x32">
 </head>
+
 <body>
   <div class="site-bg" aria-hidden="true"></div>
 
   <header class="site-header container">
-    <a class="brand" href="#" data-nav="store">
-      <img class="brand__logo" src="assets/img/logo.svg" alt="">
-      <span class="brand__title">Kahve</span>
+    <a href="#" class="brand" data-nav="store">
+      <img src="assets/img/logo.svg" alt="" class="brand__logo">
+      <span class="brand__title">Roastery Club</span>
     </a>
 
-    <nav class="top-nav">
-      <button id="themeToggle" class="icon-btn" aria-label="Temayı değiştir"><span class="icon"></span></button>
+    <!-- ↓ Logo altındaki buton barı -->
+    <div class="header-bar">
+      <button id="themeToggle" class="icon-btn" aria-label="Temayı değiştir"><span class="icon">☾</span></button>
 
-      <div id="authArea" class="auth-area"></div>
+      <div id="authArea" class="auth-area"><!-- JS dolduruyor --></div>
 
-      <!-- Rol bazlı: müşteri=Sepet (çekmece), üretici=Siparişler (sayfa) -->
-      <button id="panelToggle" class="btn btn--ghost cart-pill" aria-haspopup="dialog" aria-controls="mainDrawer">
-        <span id="panelLabel">Sepet</span> <span id="panelBadge" class="badge">0</span>
+      <button id="panelToggle" class="btn">
+        <span id="panelLabel">Sepet</span>
+        <span id="panelBadge" class="badge">0</span>
       </button>
-    </nav>
+    </div>
   </header>
+
 
   <main class="container">
 
@@ -69,6 +73,7 @@
     </section>
 
     <!-- ========== MAĞAZA ========== -->
+    <div id="customerBar" class="customer-bar is-hidden"></div>
     <section id="viewStore" class="view is-hidden">
       <div class="controls">
         <nav class="site-nav" aria-label="Kategoriler">
@@ -122,10 +127,13 @@
       <div id="dCatalog" class="panel is-hidden">
         <h2 class="h4">Ürün Fiyat & Stok</h2>
         <p class="muted fs-sm">
-          ₺/kg ve stok (gram) bilgilerini güncelle. Yeni ürün ekleyip/çıkarabilirsin.
-          Görsel için <strong>slug</strong> ile aynı adlı dosyayı <code>assets/img/products/</code> içine koy (ör. <code>kolombiya-supremo.jpg</code>).
-        </p>
-
+          ₺/kg ve stok (gram) bilgilerini güncelle. Yeni ürün ekleyip/çıkarabilirsin.</p>
+        <div id="catalogCardsWrap" class="catalog-cards"></div>
+        <div id="catalogTableWrap"></div>
+        <div class="row mt-1">
+          <button id="saveCatalogBtn" class="btn btn--primary">Kataloğu Kaydet</button>
+          <span id="catalogSavedNote" class="muted"></span>
+        </div>
         <!-- Yeni ürün formu -->
         <div class="catalog-add row wrap">
           <label class="control grow">
@@ -226,7 +234,10 @@
         <div id="cartBody"></div>
       </div>
       <footer class="drawer__footer" id="buyerFooter">
-        <div class="calc"><div>Toplam</div><div><strong id="cartTotalPrice">₺0,00</strong></div></div>
+        <div class="calc">
+          <div>Toplam</div>
+          <div><strong id="cartTotalPrice">₺0,00</strong></div>
+        </div>
         <button id="confirmOrderBtn" class="btn btn--primary">Onayla</button>
         <span class="muted fs-sm">Ödeme alınmaz; üreticiye bildirim gider ve durum takibi başlar.</span>
       </footer>
@@ -241,4 +252,5 @@
 
   <script src="assets/js/app.js"></script>
 </body>
+
 </html>
