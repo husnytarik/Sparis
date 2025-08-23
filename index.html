@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="tr">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,7 +8,10 @@
   <meta name="color-scheme" content="light dark">
   <link rel="preload" href="assets/img/background.jpg" as="image">
   <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="assets/img/favicon.png" sizes="32x32">
 </head>
+
 <body>
   <div class="site-bg" aria-hidden="true"></div>
 
@@ -271,7 +275,10 @@
         <div id="cartBody"></div>
       </div>
       <footer class="drawer__footer" id="buyerFooter">
-        <div class="calc"><div>Toplam</div><div><strong id="cartTotalPrice">₺0,00</strong></div></div>
+        <div class="calc">
+          <div>Toplam</div>
+          <div><strong id="cartTotalPrice">₺0,00</strong></div>
+        </div>
         <button id="confirmOrderBtn" class="btn btn--primary">Onayla</button>
         <span class="muted fs-sm">Ödeme alınmaz; üreticiye bildirim gider ve durum takibi başlar.</span>
       </footer>
@@ -286,4 +293,5 @@
 
   <script src="assets/js/app.js"></script>
 </body>
+
 </html>

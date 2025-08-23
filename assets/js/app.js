@@ -1,108 +1,145 @@
 // ===== Helpers =====
-const $ = (s, c=document)=>c.querySelector(s);
-const $$ = (s, c=document)=>Array.from(c.querySelectorAll(s));
+const $ = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 const root = document.documentElement;
-const fmtTL = n => (n||0).toLocaleString('tr-TR',{style:'currency',currency:'TRY',maximumFractionDigits:2});
+const fmtTL = n => (n || 0).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 2 });
 const fmtDT = ts => new Date(ts).toLocaleString('tr-TR');
-const gToKgText = g => `${(g/1000).toFixed(2)} kg`;
-const normalizePhone = p => String(p||'').replace(/\D/g,''); // sadece rakamlar
+const gToKgText = g => `${(g / 1000).toFixed(2)} kg`;
+const normalizePhone = p => String(p || '').replace(/\D/g, ''); // sadece rakamlar
 
 // ===== Theme =====
 const themeToggle = $('#themeToggle');
-function setTheme(mode){ if(mode==='light'||mode==='dark'){root.setAttribute('data-theme',mode);} else root.removeAttribute('data-theme'); localStorage.setItem('theme',mode); renderThemeIcon(); }
-function renderThemeIcon(){ const m=localStorage.getItem('theme')||'dark'; const i=themeToggle.querySelector('.icon'); i.textContent = m==='light'?'☀︎':'☾'; themeToggle.setAttribute('aria-label',`Temayı değiştir (${m==='light'?'Koyu':'Açık'})`); }
-themeToggle.addEventListener('click',()=>{ const cur=localStorage.getItem('theme')||'dark'; setTheme(cur==='dark'?'light':'dark'); });
-setTheme(localStorage.getItem('theme')||'dark');
+function setTheme(mode) { if (mode === 'light' || mode === 'dark') { root.setAttribute('data-theme', mode); } else root.removeAttribute('data-theme'); localStorage.setItem('theme', mode); renderThemeIcon(); }
+function renderThemeIcon() { const m = localStorage.getItem('theme') || 'dark'; const i = themeToggle.querySelector('.icon'); i.textContent = m === 'light' ? '☀︎' : '☾'; themeToggle.setAttribute('aria-label', `Temayı değiştir (${m === 'light' ? 'Koyu' : 'Açık'})`); }
+themeToggle.addEventListener('click', () => { const cur = localStorage.getItem('theme') || 'dark'; setTheme(cur === 'dark' ? 'light' : 'dark'); });
+setTheme(localStorage.getItem('theme') || 'dark');
 $('#year').textContent = new Date().getFullYear();
 
 // ===== Toast =====
 const toastEl = $('#toast');
-function toast(msg, type='ok', t=2600){ const n = document.createElement('div'); n.className = `t ${type}`; n.textContent = msg; toastEl.appendChild(n); setTimeout(()=> n.remove(), t); }
+function toast(msg, type = 'ok', t = 2600) { const n = document.createElement('div'); n.className = `t ${type}`; n.textContent = msg; toastEl.appendChild(n); setTimeout(() => n.remove(), t); }
 
 // ===== Catalog (price & stock) =====
 const DEFAULT_CATALOG = {
-  'etiyopya-yirgacheffe': { price: 950,  stock: 5000 },
-  'kenya-aa':              { price: 980,  stock: 4000 },
-  'tanzanya-peaberry':     { price: 820,  stock: 3500 },
-  'kolombiya-supremo':     { price: 720,  stock: 6000 },
-  'brezilya-santos':       { price: 650,  stock: 8000 },
-  'guatemala-antigua':     { price: 780,  stock: 3000 },
-  'kosta-rika-tarrazu':    { price: 840,  stock: 4200 },
-  'sumatra-mandheling':    { price: 700,  stock: 4800 },
+  'etiyopya-yirgacheffe': { price: 950, stock: 5000 },
+  'kenya-aa': { price: 980, stock: 4000 },
+  'tanzanya-peaberry': { price: 820, stock: 3500 },
+  'kolombiya-supremo': { price: 720, stock: 6000 },
+  'brezilya-santos': { price: 650, stock: 8000 },
+  'guatemala-antigua': { price: 780, stock: 3000 },
+  'kosta-rika-tarrazu': { price: 840, stock: 4200 },
+  'sumatra-mandheling': { price: 700, stock: 4800 },
   'hindistan-monsooned-malabar': { price: 680, stock: 4500 },
-  'papua-yeni-gine':       { price: 760,  stock: 2600 },
-  'panama-geisha':         { price: 3200, stock: 1200 },
-  'yemen-mocha':           { price: 2100, stock: 1800 }
+  'papua-yeni-gine': { price: 760, stock: 2600 },
+  'panama-geisha': { price: 3200, stock: 1200 },
+  'yemen-mocha': { price: 2100, stock: 1800 }
 };
-function loadCatalog(){
+function loadCatalog() {
   const raw = localStorage.getItem('catalog');
-  if(!raw){ localStorage.setItem('catalog', JSON.stringify(DEFAULT_CATALOG)); return structuredClone(DEFAULT_CATALOG); }
-  try{
+  if (!raw) { localStorage.setItem('catalog', JSON.stringify(DEFAULT_CATALOG)); return structuredClone(DEFAULT_CATALOG); }
+  try {
     const data = JSON.parse(raw);
     const migrated = {};
-    for(const [k,v] of Object.entries(data)){ migrated[k] = typeof v==='number' ? {price:v,stock:3000} : {price:+v.price||0, stock:+v.stock||0}; }
-    for(const [k,v] of Object.entries(DEFAULT_CATALOG)){ if(!migrated[k]) migrated[k] = structuredClone(v); }
+    for (const [k, v] of Object.entries(data)) { migrated[k] = typeof v === 'number' ? { price: v, stock: 3000 } : { price: +v.price || 0, stock: +v.stock || 0 }; }
+    for (const [k, v] of Object.entries(DEFAULT_CATALOG)) { if (!migrated[k]) migrated[k] = structuredClone(v); }
     return migrated;
-  }catch{ return structuredClone(DEFAULT_CATALOG); }
+  } catch { return structuredClone(DEFAULT_CATALOG); }
 }
-function saveCatalog(c){ localStorage.setItem('catalog', JSON.stringify(c)); }
+function saveCatalog(c) { localStorage.setItem('catalog', JSON.stringify(c)); }
 let CATALOG = loadCatalog();
 
 // ===== Product Cards =====
-function slugify(str=''){ return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+function slugify(str = '') { return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
 function attachAutoImage(container, baseName, explicitPath=null){
-  const fallback = 'assets/img/products/placeholder.svg';
+  // Her zaman bulunacak son çare (inline SVG)
+  const dataPlaceholder =
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400">
+        <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#2b2f36"/><stop offset="1" stop-color="#1f2329"/></linearGradient></defs>
+        <rect width="100%" height="100%" fill="url(#g)"/>
+        <g fill="#888"><path d="M320 140c-30 0-54 24-54 54s24 54 54 54 54-24 54-54-24-54-54-54zm0 24c17 0 30 13 30 30s-13 30-30 30-30-13-30-30 13-30 30-30z"/></g>
+        <text x="320" y="350" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#aaa">Ürün görseli</text>
+      </svg>
+    `);
+
+  // Denenecek yol listesi
   const list = explicitPath ? [explicitPath] : [
     `assets/img/products/${baseName}.webp`,
     `assets/img/products/${baseName}.jpg`,
     `assets/img/products/${baseName}.png`,
     `assets/img/products/${baseName}.jpeg`,
+    // Bazı repolarda uzantılar büyük olabilir:
+    `assets/img/products/${baseName}.JPG`,
+    `assets/img/products/${baseName}.PNG`,
+    dataPlaceholder // en sonda: daima çalışır
   ];
-  const img = new Image(); img.alt=''; img.decoding='async'; img.loading='lazy';
-  let i=0; function tryNext(){ if(i>=list.length){ container.innerHTML=''; const p=new Image(); p.src=fallback; container.appendChild(p); return; } img.src=list[i++]; }
-  img.onload=()=>{ container.innerHTML=''; container.appendChild(img); }; img.onerror=tryNext; tryNext();
+
+  const img = new Image();
+  img.alt = '';
+  img.decoding = 'async';
+  img.loading = 'lazy';
+
+  let i = 0;
+  img.onload = () => { container.innerHTML=''; container.appendChild(img); };
+  img.onerror = () => {
+    if (++i < list.length) {
+      if (window.DEBUG_IMG) console.warn('[img-fail]', list[i-1], '→ trying', list[i]);
+      img.src = list[i];
+    } else {
+      // teorik olarak buraya düşmez; yine de boş kalmasın
+      container.innerHTML='';
+      const f = new Image();
+      f.src = dataPlaceholder;
+      container.appendChild(f);
+    }
+  };
+
+  if (window.DEBUG_IMG) console.log('[img-try]', list[i]);
+  img.src = list[i];
 }
+
 const cards = $$('#cards .card');
-function mountCards(){
-  cards.forEach(card=>{
+function mountCards() {
+  cards.forEach(card => {
     const name = card.querySelector('h3,h2,h4')?.textContent.trim() || '';
     const slug = slugify(name);
     const media = card.querySelector('.card__media');
     const priceEl = card.querySelector('[data-price]');
     const stockEl = card.querySelector('[data-stock]');
     attachAutoImage(media, slug);
-    const entry = CATALOG[slug] ?? { price:0, stock:0 };
+    const entry = CATALOG[slug] ?? { price: 0, stock: 0 };
     priceEl.textContent = `${fmtTL(entry.price)} / kg`;
     stockEl.textContent = `Stok: ${gToKgText(entry.stock)}`;
-    card.addEventListener('click', ()=> openQtyModal(card, {name, slug, price: entry.price, stock: entry.stock}));
+    card.addEventListener('click', () => openQtyModal(card, { name, slug, price: entry.price, stock: entry.stock }));
   });
 }
 mountCards();
 
 // ===== Filters =====
 const filterBtns = $$('[data-filter]');
-filterBtns.forEach(b=> b.addEventListener('click', ()=>{
+filterBtns.forEach(b => b.addEventListener('click', () => {
   const cat = b.getAttribute('data-filter');
-  filterBtns.forEach(x=>x.classList.remove('is-active')); b.classList.add('is-active');
-  cards.forEach(card=>{ const match = cat==='all' || card.dataset.cat===cat; card.style.display = match ? '' : 'none'; });
+  filterBtns.forEach(x => x.classList.remove('is-active')); b.classList.add('is-active');
+  cards.forEach(card => { const match = cat === 'all' || card.dataset.cat === cat; card.style.display = match ? '' : 'none'; });
 }));
 
 // ===== Auth & nav =====
 const viewAuth = $('#viewAuth'), viewStore = $('#viewStore'), viewDash = $('#viewDashboard'), viewMyOrders = $('#viewMyOrders');
-function showView(id){ [viewAuth,viewStore,viewDash,viewMyOrders].forEach(v=>v.classList.add('is-hidden')); id.classList.remove('is-hidden'); }
+function showView(id) { [viewAuth, viewStore, viewDash, viewMyOrders].forEach(v => v.classList.add('is-hidden')); id.classList.remove('is-hidden'); }
 const authArea = $('#authArea');
 
-function getSession(){ try{ return JSON.parse(localStorage.getItem('session')||'null'); }catch{ return null; } }
-function setSession(s){ localStorage.setItem('session', JSON.stringify(s)); renderAuthArea(); updatePanelToggle(); }
-function logout(){ localStorage.removeItem('session'); renderAuthArea(); updatePanelToggle(); showView(viewAuth); }
+function getSession() { try { return JSON.parse(localStorage.getItem('session') || 'null'); } catch { return null; } }
+function setSession(s) { localStorage.setItem('session', JSON.stringify(s)); renderAuthArea(); updatePanelToggle(); }
+function logout() { localStorage.removeItem('session'); renderAuthArea(); updatePanelToggle(); showView(viewAuth); }
 
-function renderAuthArea(){
+function renderAuthArea() {
   const s = getSession();
   authArea.innerHTML = '';
   const btnPanel = $('#panelToggle');
-  if(!s){
+  if (!s) {
     const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = 'Giriş';
-    btn.addEventListener('click', ()=> showView(viewAuth));
+    btn.addEventListener('click', () => showView(viewAuth));
     authArea.appendChild(btn);
     $('#panelLabel').textContent = 'Sepet';
     btnPanel.title = 'Sepet';
@@ -110,21 +147,21 @@ function renderAuthArea(){
     return;
   }
   const info = document.createElement('span'); info.className = 'muted fs-sm';
-  if(s.role==='buyer'){
+  if (s.role === 'buyer') {
     info.textContent = `Müşteri: ${s.phone}`;
-    const ordersBtn = document.createElement('button'); ordersBtn.className='btn btn--ghost'; ordersBtn.textContent='Siparişlerim';
-    ordersBtn.addEventListener('click', ()=>{ renderMyOrders(currentMyOrdersFilter); showView(viewMyOrders); });
-    const storeBtn = document.createElement('button'); storeBtn.className='btn btn--ghost'; storeBtn.textContent='Mağaza';
-    storeBtn.addEventListener('click', ()=> showView(viewStore));
-    const out = document.createElement('button'); out.className='btn'; out.textContent='Çıkış'; out.addEventListener('click', logout);
+    const ordersBtn = document.createElement('button'); ordersBtn.className = 'btn btn--ghost'; ordersBtn.textContent = 'Siparişlerim';
+    ordersBtn.addEventListener('click', () => { renderMyOrders(currentMyOrdersFilter); showView(viewMyOrders); });
+    const storeBtn = document.createElement('button'); storeBtn.className = 'btn btn--ghost'; storeBtn.textContent = 'Mağaza';
+    storeBtn.addEventListener('click', () => showView(viewStore));
+    const out = document.createElement('button'); out.className = 'btn'; out.textContent = 'Çıkış'; out.addEventListener('click', logout);
     authArea.append(info, ordersBtn, storeBtn, out);
     $('#panelLabel').textContent = 'Sepet'; btnPanel.title = 'Sepet';
     showView(viewStore);
-  }else{
+  } else {
     info.textContent = `Üretici: ${s.user}`;
-    const dashBtn = document.createElement('button'); dashBtn.className='btn btn--ghost'; dashBtn.textContent='Dashboard';
-    dashBtn.addEventListener('click', ()=>{ selectDashTab('orders'); renderProducerOrdersStatus(currentProdStatus); showView(viewDash); });
-    const out = document.createElement('button'); out.className='btn'; out.textContent='Çıkış'; out.addEventListener('click', logout);
+    const dashBtn = document.createElement('button'); dashBtn.className = 'btn btn--ghost'; dashBtn.textContent = 'Dashboard';
+    dashBtn.addEventListener('click', () => { selectDashTab('orders'); renderProducerOrdersStatus(currentProdStatus); showView(viewDash); });
+    const out = document.createElement('button'); out.className = 'btn'; out.textContent = 'Çıkış'; out.addEventListener('click', logout);
     authArea.append(info, dashBtn, out);
     $('#panelLabel').textContent = 'Gelen Siparişler'; btnPanel.title = 'Gelen Siparişler';
     selectDashTab('orders'); renderProducerOrdersStatus(currentProdStatus); showView(viewDash);
@@ -133,34 +170,34 @@ function renderAuthArea(){
 renderAuthArea();
 
 // Auth tabs
-$$('.auth-tabs .tab').forEach(t=>{
-  t.addEventListener('click', ()=>{
-    $$('.auth-tabs .tab').forEach(x=>x.classList.remove('is-active'));
+$$('.auth-tabs .tab').forEach(t => {
+  t.addEventListener('click', () => {
+    $$('.auth-tabs .tab').forEach(x => x.classList.remove('is-active'));
     t.classList.add('is-active');
     const which = t.getAttribute('data-tab');
-    $$('#viewAuth .panel').forEach(p=>p.classList.add('is-hidden'));
-    $('#'+(which==='buyer'?'buyerForm':'producerForm')).classList.remove('is-hidden');
+    $$('#viewAuth .panel').forEach(p => p.classList.add('is-hidden'));
+    $('#' + (which === 'buyer' ? 'buyerForm' : 'producerForm')).classList.remove('is-hidden');
   });
 });
 
 // Buyer login
-$('#buyerLoginBtn').addEventListener('click', ()=>{
+$('#buyerLoginBtn').addEventListener('click', () => {
   const phoneRaw = $('#buyerPhone').value.trim();
   const phone = normalizePhone(phoneRaw);
-  if(!phone){ toast('Telefon giriniz','warn'); return; }
-  setSession({ role:'buyer', phone });
+  if (!phone) { toast('Telefon giriniz', 'warn'); return; }
+  setSession({ role: 'buyer', phone });
   toast('Giriş yapıldı (Müşteri).'); showView(viewStore);
 });
 
 // Producer login
-$('#producerLoginBtn').addEventListener('click', ()=>{
+$('#producerLoginBtn').addEventListener('click', () => {
   const u = $('#producerUser').value.trim();
   const p = $('#producerPass').value;
-  if(u==='producer' && p==='1234'){
-    setSession({ role:'producer', user:u });
+  if (u === 'producer' && p === '1234') {
+    setSession({ role: 'producer', user: u });
     toast('Giriş yapıldı (Üretici).');
     selectDashTab('orders'); renderProducerOrdersStatus(currentProdStatus); showView(viewDash);
-  }else{ toast('Geçersiz kullanıcı/şifre','err'); }
+  } else { toast('Geçersiz kullanıcı/şifre', 'err'); }
 });
 
 // ===== Qty Modal =====
@@ -171,7 +208,7 @@ const qtyWarn = $('#qtyWarn'), qtyStockText = $('#qtyStockText');
 let activeProduct = null;
 let lastFocusModal = null;
 
-function openQtyModal(card, meta){
+function openQtyModal(card, meta) {
   lastFocusModal = document.activeElement;
   activeProduct = { card, ...meta };
   const desc = card.querySelector('p')?.textContent.trim() || '';
@@ -179,31 +216,31 @@ function openQtyModal(card, meta){
   qtyUnitPrice.textContent = fmtTL(meta.price);
   qtyImg.src = card.querySelector('.card__media img')?.src || 'assets/img/products/placeholder.svg';
   qtyStockText.textContent = `${gToKgText(meta.stock)} (${meta.stock} g)`;
-  const step = parseInt(card.getAttribute('data-step-grams') || '100',10);
-  const maxKg = parseInt(card.getAttribute('data-max-kg') || '5',10);
-  qtyRange.step = step; qtyRange.min = step; qtyRange.max = maxKg*1000; qtyRange.value = step;
+  const step = parseInt(card.getAttribute('data-step-grams') || '100', 10);
+  const maxKg = parseInt(card.getAttribute('data-max-kg') || '5', 10);
+  qtyRange.step = step; qtyRange.min = step; qtyRange.max = maxKg * 1000; qtyRange.value = step;
   updateQtyLabelsAndTotal();
-  qtyModal.removeAttribute('inert'); qtyModal.setAttribute('aria-hidden','false');
-  document.body.style.overflow='hidden'; $('#qtyRange')?.focus();
+  qtyModal.removeAttribute('inert'); qtyModal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden'; $('#qtyRange')?.focus();
 }
-function closeQtyModal(){
-  if(qtyModal.contains(document.activeElement)){ $('#themeToggle')?.focus(); }
-  qtyModal.setAttribute('aria-hidden','true'); qtyModal.setAttribute('inert','');
-  document.body.style.overflow='';
-  if(lastFocusModal && document.contains(lastFocusModal)) lastFocusModal.focus();
-  activeProduct=null;
+function closeQtyModal() {
+  if (qtyModal.contains(document.activeElement)) { $('#themeToggle')?.focus(); }
+  qtyModal.setAttribute('aria-hidden', 'true'); qtyModal.setAttribute('inert', '');
+  document.body.style.overflow = '';
+  if (lastFocusModal && document.contains(lastFocusModal)) lastFocusModal.focus();
+  activeProduct = null;
 }
-function updateQtyLabelsAndTotal(){
-  const grams = parseInt(qtyRange.value||'0',10);
-  qtyLabel.textContent = grams; qtyKg.textContent = (grams/1000).toFixed(2);
-  const up = activeProduct?.price || 0; const line = (grams/1000)*up;
+function updateQtyLabelsAndTotal() {
+  const grams = parseInt(qtyRange.value || '0', 10);
+  qtyLabel.textContent = grams; qtyKg.textContent = (grams / 1000).toFixed(2);
+  const up = activeProduct?.price || 0; const line = (grams / 1000) * up;
   qtyLineTotal.textContent = fmtTL(line);
   const stock = activeProduct?.stock ?? 0;
-  if(grams > stock){ qtyWarn.classList.remove('is-hidden'); } else { qtyWarn.classList.add('is-hidden'); }
+  if (grams > stock) { qtyWarn.classList.remove('is-hidden'); } else { qtyWarn.classList.add('is-hidden'); }
 }
 qtyRange.addEventListener('input', updateQtyLabelsAndTotal);
-$$('[data-close-modal]').forEach(x=> x.addEventListener('click', closeQtyModal));
-document.addEventListener('keydown', e=>{ if(e.key==='Escape' && qtyModal.getAttribute('aria-hidden')==='false') closeQtyModal(); });
+$$('[data-close-modal]').forEach(x => x.addEventListener('click', closeQtyModal));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && qtyModal.getAttribute('aria-hidden') === 'false') closeQtyModal(); });
 
 // ===== Drawer (only buyer) / Panel Toggle =====
 const panelToggle = $('#panelToggle');
@@ -213,52 +250,52 @@ const cartTotalPriceEl = $('#cartTotalPrice');
 const storeNameInput = $('#storeNameInput');
 let lastFocusDrawer = null;
 
-panelToggle.addEventListener('click', ()=>{
+panelToggle.addEventListener('click', () => {
   const s = getSession();
-  if(s?.role === 'producer'){
+  if (s?.role === 'producer') {
     // Üretici: sayfaya geç, Siparişler sekmesini aç
     selectDashTab('orders'); renderProducerOrdersStatus(currentProdStatus); showView(viewDash);
-  }else{
+  } else {
     // Müşteri: sepet çekmecesini aç
     openMainDrawer();
   }
 });
-$$('[data-close-drawer]').forEach(x=> x.addEventListener('click', closeMainDrawer));
-document.addEventListener('keydown', e=>{ if(e.key==='Escape' && mainDrawer.getAttribute('aria-hidden')==='false') closeMainDrawer(); });
+$$('[data-close-drawer]').forEach(x => x.addEventListener('click', closeMainDrawer));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && mainDrawer.getAttribute('aria-hidden') === 'false') closeMainDrawer(); });
 
-function openMainDrawer(){
+function openMainDrawer() {
   lastFocusDrawer = document.activeElement;
   // Son kullanılan mağaza adını getir
   storeNameInput.value = localStorage.getItem('storeName') || '';
   renderCart();
-  mainDrawer.removeAttribute('inert'); mainDrawer.setAttribute('aria-hidden','false');
-  document.body.style.overflow='hidden';
+  mainDrawer.removeAttribute('inert'); mainDrawer.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
   $('#confirmOrderBtn')?.focus();
 }
-function closeMainDrawer(){
+function closeMainDrawer() {
   $('#panelToggle')?.focus();
-  mainDrawer.setAttribute('aria-hidden','true'); mainDrawer.setAttribute('inert','');
-  document.body.style.overflow='';
-  if(lastFocusDrawer && document.contains(lastFocusDrawer)) lastFocusDrawer.focus();
+  mainDrawer.setAttribute('aria-hidden', 'true'); mainDrawer.setAttribute('inert', '');
+  document.body.style.overflow = '';
+  if (lastFocusDrawer && document.contains(lastFocusDrawer)) lastFocusDrawer.focus();
 }
 
 // mağaza adı değişince sakla
-storeNameInput.addEventListener('change', ()=> localStorage.setItem('storeName', storeNameInput.value.trim()));
+storeNameInput.addEventListener('change', () => localStorage.setItem('storeName', storeNameInput.value.trim()));
 
 // ===== Cart =====
 let cart = loadCart();
-function loadCart(){ try{ return JSON.parse(localStorage.getItem('cart')||'[]'); }catch{ return []; } }
-function saveCart(){ localStorage.setItem('cart', JSON.stringify(cart)); renderCart(); updatePanelToggle(); }
-function addToCart(item){ const ex = cart.find(x=> x.slug===item.slug); if(ex){ ex.grams += item.grams; ex.line = (ex.grams/1000)*ex.pricePerKg; } else cart.push(item); saveCart(); }
-function removeFromCart(slug){ cart = cart.filter(x=>x.slug!==slug); saveCart(); }
-function clearCart(){ cart = []; saveCart(); }
-function cartTotal(){ return cart.reduce((s,x)=> s + x.line, 0); }
+function loadCart() { try { return JSON.parse(localStorage.getItem('cart') || '[]'); } catch { return []; } }
+function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); renderCart(); updatePanelToggle(); }
+function addToCart(item) { const ex = cart.find(x => x.slug === item.slug); if (ex) { ex.grams += item.grams; ex.line = (ex.grams / 1000) * ex.pricePerKg; } else cart.push(item); saveCart(); }
+function removeFromCart(slug) { cart = cart.filter(x => x.slug !== slug); saveCart(); }
+function clearCart() { cart = []; saveCart(); }
+function cartTotal() { return cart.reduce((s, x) => s + x.line, 0); }
 
-function renderCart(){
-  cartBody.innerHTML='';
-  if(cart.length===0){ cartBody.innerHTML = `<div class="muted">Sepetiniz boş.</div>`; }
-  cart.forEach(i=>{
-    const row = document.createElement('div'); row.className='cart-item';
+function renderCart() {
+  cartBody.innerHTML = '';
+  if (cart.length === 0) { cartBody.innerHTML = `<div class="muted">Sepetiniz boş.</div>`; }
+  cart.forEach(i => {
+    const row = document.createElement('div'); row.className = 'cart-item';
     row.innerHTML = `
       <img src="${i.img}" alt="">
       <div>
@@ -271,31 +308,31 @@ function renderCart(){
       </div>`;
     cartBody.appendChild(row);
   });
-  $$('#cartBody [data-remove]').forEach(b=> b.addEventListener('click', ()=> removeFromCart(b.getAttribute('data-remove'))));
+  $$('#cartBody [data-remove]').forEach(b => b.addEventListener('click', () => removeFromCart(b.getAttribute('data-remove'))));
   cartTotalPriceEl.textContent = fmtTL(cartTotal());
 }
 renderCart();
 
-$('#addToCartBtn').addEventListener('click', ()=>{
-  if(!activeProduct) return;
-  const grams = parseInt(qtyRange.value||'0',10);
-  if(grams<=0){ toast('Miktar seçiniz','warn'); return; }
+$('#addToCartBtn').addEventListener('click', () => {
+  if (!activeProduct) return;
+  const grams = parseInt(qtyRange.value || '0', 10);
+  if (grams <= 0) { toast('Miktar seçiniz', 'warn'); return; }
   const img = $('#qtyImg').src;
-  const item = { slug:activeProduct.slug, name:activeProduct.name, grams, pricePerKg:activeProduct.price, img, line:(grams/1000)*activeProduct.price };
+  const item = { slug: activeProduct.slug, name: activeProduct.name, grams, pricePerKg: activeProduct.price, img, line: (grams / 1000) * activeProduct.price };
   addToCart(item);
   toast('Sepete eklendi.');
   closeQtyModal(); openMainDrawer();
 });
 
 // ===== Orders store =====
-function loadOrders(){ try{ return JSON.parse(localStorage.getItem('orders')||'[]'); }catch{ return []; } }
-function saveOrders(arr){ localStorage.setItem('orders', JSON.stringify(arr)); updatePanelToggle(); }
+function loadOrders() { try { return JSON.parse(localStorage.getItem('orders') || '[]'); } catch { return []; } }
+function saveOrders(arr) { localStorage.setItem('orders', JSON.stringify(arr)); updatePanelToggle(); }
 
 // ===== Place order (no payment) =====
-$('#confirmOrderBtn').addEventListener('click', ()=>{
+$('#confirmOrderBtn').addEventListener('click', () => {
   const session = getSession();
-  if(!session || session.role!=='buyer'){ toast('Sipariş için önce müşteri girişi yapınız.','warn'); showView(viewAuth); return; }
-  if(cart.length===0){ toast('Sepet boş.','warn'); return; }
+  if (!session || session.role !== 'buyer') { toast('Sipariş için önce müşteri girişi yapınız.', 'warn'); showView(viewAuth); return; }
+  if (cart.length === 0) { toast('Sepet boş.', 'warn'); return; }
 
   // Mağaza / teslimat metni
   const storeName = (storeNameInput.value || '').trim();
@@ -310,7 +347,7 @@ $('#confirmOrderBtn').addEventListener('click', ()=>{
     items: cart,
     totalPrice: total,
     status: 'pending', // pending → approved → preparing → in_transit → delivered
-    timeline: [{ s:'pending', t: Date.now() }],
+    timeline: [{ s: 'pending', t: Date.now() }],
     invoiceDataUrl: null
   };
   const orders = loadOrders(); orders.unshift(order); saveOrders(orders);
@@ -324,43 +361,43 @@ $('#confirmOrderBtn').addEventListener('click', ()=>{
   toast('Sipariş onaylandı. Durum takibi ekranına geçiliyor...');
   clearCart();
   closeMainDrawer();
-  setTimeout(()=>{ currentMyOrdersFilter = 'active'; renderMyOrders(currentMyOrdersFilter); showView(viewMyOrders); }, 0);
+  setTimeout(() => { currentMyOrdersFilter = 'active'; renderMyOrders(currentMyOrdersFilter); showView(viewMyOrders); }, 0);
 });
 
 // ===== Notifications (demo) =====
-function notifySMS(to, message){ console.log('SMS →', to, message); }
-function notifyInApp(msg){ toast(msg, 'ok'); }
+function notifySMS(to, message) { console.log('SMS →', to, message); }
+function notifyInApp(msg) { toast(msg, 'ok'); }
 
 // ===== Buyer: My Orders =====
 let currentMyOrdersFilter = 'active'; // active | past | all
-$('#myOrdersTabs')?.addEventListener('click', (e)=>{
-  const b = e.target.closest('.tab'); if(!b) return;
-  $$('#myOrdersTabs .tab').forEach(x=>x.classList.remove('is-active'));
+$('#myOrdersTabs')?.addEventListener('click', (e) => {
+  const b = e.target.closest('.tab'); if (!b) return;
+  $$('#myOrdersTabs .tab').forEach(x => x.classList.remove('is-active'));
   b.classList.add('is-active');
   currentMyOrdersFilter = b.getAttribute('data-mtab');
   renderMyOrders(currentMyOrdersFilter);
 });
-function isPastStatus(s){ return s==='delivered'; }
-function isActiveStatus(s){ return !isPastStatus(s); }
-function labelStatus(s){
-  return s==='pending'   ? 'Yeni Sipariş'
-       : s==='approved'  ? 'Onaylandı'
-       : s==='preparing' ? 'Hazırlanıyor'
-       : s==='in_transit'? 'Sevkiyatta'
-       : s==='delivered' ? 'Teslim Edildi'
-       : s;
+function isPastStatus(s) { return s === 'delivered'; }
+function isActiveStatus(s) { return !isPastStatus(s); }
+function labelStatus(s) {
+  return s === 'pending' ? 'Yeni Sipariş'
+    : s === 'approved' ? 'Onaylandı'
+      : s === 'preparing' ? 'Hazırlanıyor'
+        : s === 'in_transit' ? 'Sevkiyatta'
+          : s === 'delivered' ? 'Teslim Edildi'
+            : s;
 }
-function renderTimeline(tl=[]){
-  if(!tl?.length) return '';
-  return `<ul class="timeline">` + tl.map(x=> `<li><strong>${labelStatus(x.s)}</strong> — <time>${fmtDT(x.t)}</time></li>`).join('') + `</ul>`;
+function renderTimeline(tl = []) {
+  if (!tl?.length) return '';
+  return `<ul class="timeline">` + tl.map(x => `<li><strong>${labelStatus(x.s)}</strong> — <time>${fmtDT(x.t)}</time></li>`).join('') + `</ul>`;
 }
-function renderMyOrders(filter='active'){
-  const s = getSession(); const box = $('#myOrdersList'); box.innerHTML='';
-  const all = loadOrders().filter(o=> o.buyerPhone===normalizePhone(s?.phone));
-  let list = all; if(filter==='active') list = all.filter(o=> isActiveStatus(o.status)); else if(filter==='past') list = all.filter(o=> isPastStatus(o.status));
-  if(list.length===0){ box.innerHTML = `<div class="muted">Kayıt bulunamadı.</div>`; return; }
-  list.forEach(o=>{
-    const div = document.createElement('div'); div.className='panel';
+function renderMyOrders(filter = 'active') {
+  const s = getSession(); const box = $('#myOrdersList'); box.innerHTML = '';
+  const all = loadOrders().filter(o => o.buyerPhone === normalizePhone(s?.phone));
+  let list = all; if (filter === 'active') list = all.filter(o => isActiveStatus(o.status)); else if (filter === 'past') list = all.filter(o => isPastStatus(o.status));
+  if (list.length === 0) { box.innerHTML = `<div class="muted">Kayıt bulunamadı.</div>`; return; }
+  list.forEach(o => {
+    const div = document.createElement('div'); div.className = 'panel';
     div.innerHTML = `
       <div class="row"><strong>${o.id}</strong><span>${fmtTL(o.totalPrice)}</span></div>
       <div class="row">
@@ -369,7 +406,7 @@ function renderMyOrders(filter='active'){
       </div>
       ${o.storeName ? `<div class="note mt-1">Teslimat / Mağaza: <strong>${o.storeName}</strong></div>` : ''}
       <div class="stack mt-1">
-        ${o.items.map(i=>`<div class="row"><span>${i.name} — ${i.grams} g</span><span>${fmtTL(i.line)}</span></div>`).join('')}
+        ${o.items.map(i => `<div class="row"><span>${i.name} — ${i.grams} g</span><span>${fmtTL(i.line)}</span></div>`).join('')}
       </div>
       ${renderTimeline(o.timeline)}
       <div class="row mt-1">
@@ -382,21 +419,21 @@ function renderMyOrders(filter='active'){
 
 // ===== Producer: Dashboard tabs =====
 const dashTabs = $('#dashTabs');
-dashTabs.addEventListener('click', (e)=>{
-  const b = e.target.closest('.tab'); if(!b) return;
-  $$('#dashTabs .tab').forEach(x=>x.classList.remove('is-active'));
+dashTabs.addEventListener('click', (e) => {
+  const b = e.target.closest('.tab'); if (!b) return;
+  $$('#dashTabs .tab').forEach(x => x.classList.remove('is-active'));
   b.classList.add('is-active');
   const which = b.getAttribute('data-dtab');
   selectDashTab(which);
 });
-function selectDashTab(which='orders'){
+function selectDashTab(which = 'orders') {
   const ordersPanel = $('#dOrders'), catalogPanel = $('#dCatalog');
-  if(which==='catalog'){
+  if (which === 'catalog') {
     ordersPanel.classList.add('is-hidden');
     catalogPanel.classList.remove('is-hidden');
     // <<< Katalog tabı açılınca tabloyu oluştur
     renderCatalogTable();
-  }else{
+  } else {
     catalogPanel.classList.add('is-hidden');
     ordersPanel.classList.remove('is-hidden');
     renderProducerOrdersStatus(currentProdStatus);
@@ -406,22 +443,22 @@ function selectDashTab(which='orders'){
 // ===== Producer: Order Status Tabs & List =====
 let currentProdStatus = 'pending'; // pending|approved|preparing|in_transit|delivered
 const ordersStatusTabs = $('#ordersStatusTabs');
-ordersStatusTabs.addEventListener('click', (e)=>{
-  const b = e.target.closest('.tab'); if(!b) return;
-  $$('#ordersStatusTabs .tab').forEach(x=>x.classList.remove('is-active'));
+ordersStatusTabs.addEventListener('click', (e) => {
+  const b = e.target.closest('.tab'); if (!b) return;
+  $$('#ordersStatusTabs .tab').forEach(x => x.classList.remove('is-active'));
   b.classList.add('is-active');
   currentProdStatus = b.getAttribute('data-ostatus');
   renderProducerOrdersStatus(currentProdStatus);
 });
 
-function renderProducerOrdersStatus(status='pending'){
-  const box = $('#prodOrdersList'); box.innerHTML='';
-  const orders = loadOrders().filter(o=> o.status===status);
-  if(orders.length===0){ box.innerHTML = `<div class="muted">Kayıt bulunamadı.</div>`; return; }
+function renderProducerOrdersStatus(status = 'pending') {
+  const box = $('#prodOrdersList'); box.innerHTML = '';
+  const orders = loadOrders().filter(o => o.status === status);
+  if (orders.length === 0) { box.innerHTML = `<div class="muted">Kayıt bulunamadı.</div>`; return; }
 
-  orders.forEach(o=>{
-    const card = document.createElement('div'); card.className='order-card';
-    const buyerMasked = (o.buyerPhone||'').replace(/(\d{3})\d+(\d{2})/, '$1***$2');
+  orders.forEach(o => {
+    const card = document.createElement('div'); card.className = 'order-card';
+    const buyerMasked = (o.buyerPhone || '').replace(/(\d{3})\d+(\d{2})/, '$1***$2');
     const selectId = `sel-${o.id}`;
     card.innerHTML = `
       <div class="order-head">
@@ -434,14 +471,14 @@ function renderProducerOrdersStatus(status='pending'){
       </div>
       ${o.storeName ? `<div class="note mt-1">Teslimat / Mağaza: <strong>${o.storeName}</strong></div>` : ''}
       <div class="order-lines">
-        ${o.items.map(i=>`<div class="row"><span>${i.name} — ${i.grams} g</span><span>${fmtTL(i.line)}</span></div>`).join('')}
+        ${o.items.map(i => `<div class="row"><span>${i.name} — ${i.grams} g</span><span>${fmtTL(i.line)}</span></div>`).join('')}
       </div>
       ${renderTimeline(o.timeline)}
       <div class="order-actions">
         <label class="control">
           <span>Durumu Güncelle</span>
           <select id="${selectId}" data-status-for="${o.id}">
-            ${['pending','approved','preparing','in_transit','delivered'].map(s=> `<option value="${s}" ${s===o.status?'selected':''}>${labelStatus(s)}</option>`).join('')}
+            ${['pending', 'approved', 'preparing', 'in_transit', 'delivered'].map(s => `<option value="${s}" ${s === o.status ? 'selected' : ''}>${labelStatus(s)}</option>`).join('')}
           </select>
         </label>
         <button class="btn" data-apply-status="${o.id}">Uygula</button>
@@ -449,60 +486,60 @@ function renderProducerOrdersStatus(status='pending'){
           <span>Fatura (PDF) yükle</span>
           <input type="file" accept="application/pdf" data-invoice="${o.id}">
         </label>
-        ${o.invoiceDataUrl ? `<a class="btn btn--ghost" href="${o.invoiceDataUrl}" download="${o.id}.pdf">Mevcut Faturayı İndir</a>`: ''}
+        ${o.invoiceDataUrl ? `<a class="btn btn--ghost" href="${o.invoiceDataUrl}" download="${o.id}.pdf">Mevcut Faturayı İndir</a>` : ''}
       </div>
     `;
     box.appendChild(card);
   });
 
-  $$('[data-apply-status]').forEach(b=> b.addEventListener('click', ()=>{
+  $$('[data-apply-status]').forEach(b => b.addEventListener('click', () => {
     const id = b.getAttribute('data-apply-status'); const sel = document.querySelector(`select[data-status-for="${id}"]`);
-    if(sel) updateOrderStatus(id, sel.value);
+    if (sel) updateOrderStatus(id, sel.value);
   }));
-  $$('[data-invoice]').forEach(inp=> inp.addEventListener('change', handleInvoiceUpload));
+  $$('[data-invoice]').forEach(inp => inp.addEventListener('change', handleInvoiceUpload));
 }
 
-function updateOrderStatus(id, next){
+function updateOrderStatus(id, next) {
   const orders = loadOrders();
-  const o = orders.find(x=>x.id===id); if(!o) return;
-  if(o.status === next){ toast('Durum değişmedi.','warn'); return; }
-  o.status = next; o.timeline.push({ s:next, t: Date.now() });
+  const o = orders.find(x => x.id === id); if (!o) return;
+  if (o.status === next) { toast('Durum değişmedi.', 'warn'); return; }
+  o.status = next; o.timeline.push({ s: next, t: Date.now() });
   saveOrders(orders);
   notifySMS(o.buyerPhone, `Sipariş ${id} durumu: ${labelStatus(next)}`);
   notifyInApp(`Sipariş ${id} ${labelStatus(next)}.`);
   // Üretici listesi ve müşteri tarafı yenile
   renderProducerOrdersStatus(currentProdStatus);
-  if(getSession()?.role==='buyer'){ renderMyOrders(currentMyOrdersFilter); }
+  if (getSession()?.role === 'buyer') { renderMyOrders(currentMyOrdersFilter); }
 }
 
 // Invoice upload (base64)
-function handleInvoiceUpload(e){
-  const file = e.target.files?.[0]; if(!file) return;
-  if(file.type!=='application/pdf'){ toast('PDF seçiniz','warn'); return; }
+function handleInvoiceUpload(e) {
+  const file = e.target.files?.[0]; if (!file) return;
+  if (file.type !== 'application/pdf') { toast('PDF seçiniz', 'warn'); return; }
   const id = e.target.getAttribute('data-invoice');
   const reader = new FileReader();
-  reader.onload = ()=>{
+  reader.onload = () => {
     const dataUrl = reader.result;
     const orders = loadOrders();
-    const o = orders.find(x=>x.id===id); if(!o) return;
+    const o = orders.find(x => x.id === id); if (!o) return;
     o.invoiceDataUrl = dataUrl; saveOrders(orders);
     toast('Fatura yüklendi.');
     renderProducerOrdersStatus(currentProdStatus);
     notifySMS(o.buyerPhone, `Sipariş ${id} faturası hazır.`);
-    if(getSession()?.role==='buyer'){ renderMyOrders(currentMyOrdersFilter); }
+    if (getSession()?.role === 'buyer') { renderMyOrders(currentMyOrdersFilter); }
   };
   reader.readAsDataURL(file);
 }
 
 // ===== Catalog UI =====
-function renderCatalogTable(){
-  const wrap = $('#catalogTableWrap'); wrap.innerHTML='';
-  const table = document.createElement('table'); table.className='table';
+function renderCatalogTable() {
+  const wrap = $('#catalogTableWrap'); wrap.innerHTML = '';
+  const table = document.createElement('table'); table.className = 'table';
   const header = `<tr><th>Ürün</th><th>Slug</th><th>₺/kg</th><th>Stok (g)</th></tr>`;
-  const rows = Object.keys(CATALOG).sort().map(sl=>{
-    const card = Array.from(document.querySelectorAll('#cards .card')).find(c=> slugify(c.querySelector('h3,h2,h4').textContent.trim())===sl);
+  const rows = Object.keys(CATALOG).sort().map(sl => {
+    const card = Array.from(document.querySelectorAll('#cards .card')).find(c => slugify(c.querySelector('h3,h2,h4').textContent.trim()) === sl);
     const name = card ? card.querySelector('h3,h2,h4').textContent.trim() : sl;
-    const val = CATALOG[sl] ?? {price:0,stock:0};
+    const val = CATALOG[sl] ?? { price: 0, stock: 0 };
     return `<tr>
       <td>${name}</td>
       <td class="muted fs-sm">${sl}</td>
@@ -513,37 +550,37 @@ function renderCatalogTable(){
   table.innerHTML = `<thead>${header}</thead><tbody>${rows}</tbody>`;
   wrap.appendChild(table);
 }
-$('#saveCatalogBtn').addEventListener('click', ()=>{
+$('#saveCatalogBtn').addEventListener('click', () => {
   const inputs = $$('#dCatalog input');
-  inputs.forEach(inp=>{
+  inputs.forEach(inp => {
     const sl = inp.getAttribute('data-sl'); const kind = inp.getAttribute('data-kind');
-    const v = parseFloat(inp.value||'0');
-    if(!CATALOG[sl]) CATALOG[sl] = { price:0, stock:0 };
-    if(kind==='price') CATALOG[sl].price = isFinite(v)? v : 0;
-    else CATALOG[sl].stock = isFinite(v)? Math.max(0, Math.round(v)) : 0;
+    const v = parseFloat(inp.value || '0');
+    if (!CATALOG[sl]) CATALOG[sl] = { price: 0, stock: 0 };
+    if (kind === 'price') CATALOG[sl].price = isFinite(v) ? v : 0;
+    else CATALOG[sl].stock = isFinite(v) ? Math.max(0, Math.round(v)) : 0;
   });
   saveCatalog(CATALOG);
   mountCards();
-  $('#catalogSavedNote').textContent = 'Kaydedildi.'; setTimeout(()=> $('#catalogSavedNote').textContent='', 1500);
+  $('#catalogSavedNote').textContent = 'Kaydedildi.'; setTimeout(() => $('#catalogSavedNote').textContent = '', 1500);
 });
 
 // ===== Panel Toggle Badge =====
-function activeOrderCount(){ return loadOrders().filter(o=> o.status!=='delivered').length; }
-function updatePanelToggle(){
+function activeOrderCount() { return loadOrders().filter(o => o.status !== 'delivered').length; }
+function updatePanelToggle() {
   const s = getSession(); const badge = $('#panelBadge');
-  if(s?.role==='producer'){ $('#panelLabel').textContent = 'Gelen Siparişler'; badge.textContent = String(activeOrderCount()); }
-  else{ $('#panelLabel').textContent = 'Sepet'; badge.textContent = String(cart.length); }
+  if (s?.role === 'producer') { $('#panelLabel').textContent = 'Gelen Siparişler'; badge.textContent = String(activeOrderCount()); }
+  else { $('#panelLabel').textContent = 'Sepet'; badge.textContent = String(cart.length); }
 }
 updatePanelToggle();
 
 // ===== Storage sync between tabs =====
-window.addEventListener('storage', (e)=>{
-  if(e.key === 'orders'){
+window.addEventListener('storage', (e) => {
+  if (e.key === 'orders') {
     const s = getSession();
-    if(s?.role === 'producer'){ renderProducerOrdersStatus(currentProdStatus); updatePanelToggle(); }
-    if(s?.role === 'buyer'){ renderMyOrders(currentMyOrdersFilter); updatePanelToggle(); }
+    if (s?.role === 'producer') { renderProducerOrdersStatus(currentProdStatus); updatePanelToggle(); }
+    if (s?.role === 'buyer') { renderMyOrders(currentMyOrdersFilter); updatePanelToggle(); }
   }
 });
 
 // ===== Nav brand =====
-$$('[data-nav="store"]').forEach(a=> a.addEventListener('click', e=>{ e.preventDefault(); showView(viewStore); }));
+$$('[data-nav="store"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); showView(viewStore); }));
