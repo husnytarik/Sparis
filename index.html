@@ -1,16 +1,12 @@
 <!doctype html>
-<html lang="tr">
+<html lang="tr" data-theme="dark">
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kahve Sipariş Sistemi (Demo)</title>
-  <meta name="color-scheme" content="light dark">
-  <link rel="preload" href="assets/img/background.jpg" as="image">
-  <link rel="stylesheet" href="assets/css/styles.css" />
-  <!-- Favicon -->
-  <link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
-  <link rel="alternate icon" href="assets/img/favicon.png" sizes="32x32">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sparis • Çekirdek Kahve</title>
+  <link rel="icon" href="assets/img/favicon.svg">
+  <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 
 <body>
@@ -19,129 +15,124 @@
   <header class="site-header container">
     <a href="#" class="brand" data-nav="store">
       <img src="assets/img/logo.svg" alt="" class="brand__logo">
-      <span class="brand__title">Roastery Club</span>
+      <span class="brand__title">Sparis</span>
     </a>
 
-    <!-- ↓ Logo altındaki buton barı -->
+    <!-- Logo altındaki bar -->
     <div class="header-bar">
       <button id="themeToggle" class="icon-btn" aria-label="Temayı değiştir"><span class="icon">☾</span></button>
 
-      <div id="authArea" class="auth-area"><!-- JS dolduruyor --></div>
+      <div id="authArea" class="auth-area"><!-- JS doldurur --></div>
 
-      <button id="panelToggle" class="btn">
+      <button id="panelToggle" class="btn" title="Sepet">
         <span id="panelLabel">Sepet</span>
         <span id="panelBadge" class="badge">0</span>
       </button>
     </div>
   </header>
 
-
   <main class="container">
 
-    <!-- ========== GİRİŞ ========== -->
+    <!-- Giriş -->
     <section id="viewAuth" class="view">
-      <div class="auth-tabs">
-        <button class="tab is-active" data-tab="buyer">Müşteri Girişi (Telefon)</button>
-        <button class="tab" data-tab="producer">Üretici Girişi (Kullanıcı/Şifre)</button>
+      <div class="view-head">
+        <h2 class="h4">Giriş</h2>
       </div>
 
-      <div class="auth-panels">
-        <form id="buyerForm" class="panel is-active" onsubmit="return false">
-          <h2 class="h4">Müşteri Girişi</h2>
-          <label class="control">
-            <span>Telefon Numarası</span>
-            <input id="buyerPhone" type="tel" placeholder="5xx xxx xx xx" required>
-          </label>
-          <button id="buyerLoginBtn" class="btn btn--primary">Devam Et</button>
-          <p class="muted fs-sm">Demo: OTP yok; üretimde SMS OTP ekleyiniz.</p>
-        </form>
+      <div class="auth-tabs">
+        <button class="tab is-active" data-tab="buyer">Müşteri</button>
+        <button class="tab" data-tab="producer">Üretici</button>
+      </div>
 
-        <form id="producerForm" class="panel is-hidden" onsubmit="return false">
-          <h2 class="h4">Üretici Girişi</h2>
-          <label class="control">
-            <span>Kullanıcı Adı</span>
-            <input id="producerUser" type="text" placeholder="producer" required>
-          </label>
-          <label class="control">
-            <span>Şifre</span>
-            <input id="producerPass" type="password" placeholder="1234" required>
-          </label>
-          <button id="producerLoginBtn" class="btn btn--primary">Giriş Yap</button>
-          <p class="muted fs-sm">Demo: <code>producer / 1234</code></p>
-        </form>
+      <div id="buyerForm" class="panel">
+        <div class="control">
+          <span>Telefon</span>
+          <input id="buyerPhone" type="tel" placeholder="5xx xxx xx xx">
+        </div>
+        <button id="buyerLoginBtn" class="btn btn--primary">Müşteri Olarak Gir</button>
+      </div>
+
+      <div id="producerForm" class="panel is-hidden">
+        <div class="control">
+          <span>Kullanıcı Adı</span>
+          <input id="producerUser" type="text" placeholder="producer">
+        </div>
+        <div class="control">
+          <span>Şifre</span>
+          <input id="producerPass" type="password" placeholder="1234">
+        </div>
+        <button id="producerLoginBtn" class="btn btn--primary">Üretici Olarak Gir</button>
       </div>
     </section>
 
-    <!-- ========== MAĞAZA ========== -->
-    <div id="customerBar" class="customer-bar is-hidden"></div>
+    <!-- Mağaza -->
     <section id="viewStore" class="view is-hidden">
+      <!-- Kategorilerin üstünde müşteri barı -->
+      <div id="customerBar" class="customer-bar is-hidden"></div>
+
       <div class="controls">
         <nav class="site-nav" aria-label="Kategoriler">
-          <button class="btn btn--ghost is-active" data-filter="all">Tümü</button>
-          <button class="btn btn--ghost" data-filter="afrika">Afrika</button>
-          <button class="btn btn--ghost" data-filter="amerika">Orta & Güney Amerika</button>
-          <button class="btn btn--ghost" data-filter="asya">Asya & Pasifik</button>
-          <button class="btn btn--ghost" data-filter="ozel">Özel</button>
+          <button class="tab is-active" data-filter="all">Tümü</button>
+          <button class="tab" data-filter="afrika">Afrika</button>
+          <button class="tab" data-filter="amerika">Orta &amp; Güney Amerika</button>
+          <button class="tab" data-filter="asya">Asya &amp; Pasifik</button>
+          <button class="tab" data-filter="ozel">Özel</button>
         </nav>
       </div>
 
-      <!-- Kartlar JS ile çizilir -->
-      <section id="cards" class="grid"></section>
+      <section class="grid" id="cards"><!-- JS doldurur --></section>
     </section>
 
-    <!-- ========== MÜŞTERİ: SİPARİŞLERİM ========== -->
+    <!-- Müşteri: Siparişlerim -->
     <section id="viewMyOrders" class="view is-hidden">
-      <header class="view-head">
+      <div class="view-head">
         <h2 class="h4">Siparişlerim</h2>
-      </header>
-
-      <div class="tabs" id="myOrdersTabs">
+      </div>
+      <div id="myOrdersTabs" class="tabs">
         <button class="tab is-active" data-mtab="active">Aktif</button>
         <button class="tab" data-mtab="past">Geçmiş</button>
         <button class="tab" data-mtab="all">Tümü</button>
       </div>
-
       <div id="myOrdersList" class="stack"></div>
     </section>
 
-    <!-- ========== ÜRETİCİ: SİPARİŞLER & KATALOG (SAYFA İÇİ) ========== -->
+    <!-- Üretici Dashboard -->
     <section id="viewDashboard" class="view is-hidden">
-      <div class="tabs" id="dashTabs">
+      <div class="view-head">
+        <h2 class="h4">Üretici Paneli</h2>
+      </div>
+
+      <div id="dashTabs" class="tabs">
         <button class="tab is-active" data-dtab="orders">Siparişler</button>
         <button class="tab" data-dtab="catalog">Katalog</button>
       </div>
 
-      <!-- Siparişler paneli -->
+      <!-- Siparişler -->
       <div id="dOrders" class="panel">
-        <div class="tabs" id="ordersStatusTabs">
-          <button class="tab is-active" data-ostatus="pending">Yeni Siparişler</button>
+        <div id="ordersStatusTabs" class="tabs">
+          <button class="tab is-active" data-ostatus="pending">Yeni</button>
           <button class="tab" data-ostatus="approved">Onaylanan</button>
           <button class="tab" data-ostatus="preparing">Hazırlanan</button>
           <button class="tab" data-ostatus="in_transit">Sevkiyatta</button>
-          <button class="tab" data-ostatus="delivered">Teslim Edildi</button>
+          <button class="tab" data-ostatus="delivered">Teslim</button>
         </div>
         <div id="prodOrdersList" class="stack"></div>
       </div>
 
-      <!-- Katalog paneli -->
+      <!-- Katalog -->
       <div id="dCatalog" class="panel is-hidden">
-        <h2 class="h4">Ürün Fiyat & Stok</h2>
-        <p class="muted fs-sm">
-          ₺/kg ve stok (gram) bilgilerini güncelle. Yeni ürün ekleyip/çıkarabilirsin.</p>
-        <div id="catalogCardsWrap" class="catalog-cards"></div>
-        <div id="catalogTableWrap"></div>
-        <div class="row mt-1">
-          <button id="saveCatalogBtn" class="btn btn--primary">Kataloğu Kaydet</button>
-          <span id="catalogSavedNote" class="muted"></span>
-        </div>
-        <!-- Yeni ürün formu -->
-        <div class="catalog-add row wrap">
+        <h3 class="h4">Ürün Fiyat &amp; Stok</h3>
+        <p class="muted fs-sm">₺/kg ve stok (gram) bilgilerini güncelle. Görsel yoksa sabit görsel gösterilir. “Görsel
+          Yükle / Sil” ile yönetebilirsin.</p>
+
+        <!-- Yeni ürün -->
+        <div class="row wrap">
           <label class="control grow">
             <span>Ürün Adı</span>
-            <input id="newName" type="text" placeholder="Örn. Peru Cajamarca">
+            <input id="newName" type="text" placeholder="Yeni Ürün">
           </label>
           <label class="control">
-            <span>Kategori</span>
+            <span>Kat.</span>
             <select id="newCat">
               <option value="afrika">Afrika</option>
               <option value="amerika">Orta & Güney Amerika</option>
@@ -151,19 +142,26 @@
           </label>
           <label class="control">
             <span>₺/kg</span>
-            <input id="newPrice" type="number" min="0" step="10" value="0">
+            <input id="newPrice" type="number" value="0" min="0" step="10">
           </label>
           <label class="control">
             <span>Stok (g)</span>
-            <input id="newStock" type="number" min="0" step="50" value="0">
+            <input id="newStock" type="number" value="0" min="0" step="50">
           </label>
           <label class="control grow">
-            <span>Açıklama (opsiyonel)</span>
-            <input id="newDesc" type="text" placeholder="Tat notları vb.">
+            <span>Açıklama</span>
+            <input id="newDesc" type="text" placeholder="Tat notları">
           </label>
-          <button id="addProductBtn" class="btn btn--primary" style="align-self:end">Ekle</button>
+          <div class="control">
+            <span>&nbsp;</span>
+            <button id="addProductBtn" class="btn">Ürün Ekle</button>
+          </div>
         </div>
 
+        <!-- Mobil kartlar -->
+        <div id="catalogCardsWrap" class="catalog-cards"></div>
+
+        <!-- Masaüstü tablo -->
         <div id="catalogTableWrap"></div>
 
         <div class="row mt-1">
@@ -174,82 +172,73 @@
     </section>
   </main>
 
-  <!-- ÜRÜN MİKTAR MODAL -->
-  <div id="qtyModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" inert>
-    <div class="modal__backdrop" data-close-modal></div>
-    <div class="modal__panel">
-      <header class="modal__header">
-        <h3 class="h4" id="qtyTitle">Ürün Ekle</h3>
-        <button class="icon-btn" data-close-modal aria-label="Kapat">✕</button>
-      </header>
-      <div class="modal__body">
-        <div class="modal__product">
-          <img id="qtyImg" alt="">
-          <div>
-            <div id="qtyName" class="modal__name"></div>
-            <div id="qtyDesc" class="modal__desc"></div>
-            <div class="muted fs-sm">Birim fiyat: <strong id="qtyUnitPrice"></strong> / kg</div>
-            <div class="muted fs-sm">Stok: <strong id="qtyStockText"></strong></div>
-          </div>
-        </div>
+  <footer class="site-footer container">
+    © <span id="year"></span> Sparis
+  </footer>
 
-        <label class="control w-100">
-          <div class="row">
-            <span>Miktar</span>
-            <strong><span id="qtyLabel">0</span> g (<span id="qtyKg">0</span> kg)</strong>
-          </div>
-          <input id="qtyRange" type="range" min="100" max="5000" step="100" />
-        </label>
-
-        <div id="qtyWarn" class="note warn is-hidden">
-          Seçilen miktar mevcut stoktan fazla. Bu sipariş için <strong>üretim süresi değerlendirilecektir.</strong>
-        </div>
-
-        <div class="calc">
-          <div>Satır Tutarı</div>
-          <div><strong id="qtyLineTotal">₺0,00</strong></div>
-        </div>
-      </div>
-      <footer class="modal__footer">
-        <button class="btn" id="addToCartBtn">Sepete Ekle</button>
-      </footer>
-    </div>
-  </div>
-
-  <!-- MÜŞTERİ ÇEKMECESİ (yalnızca müşteri) -->
-  <aside id="mainDrawer" class="drawer" aria-hidden="true" role="dialog" inert>
+  <!-- Sepet / Drawer -->
+  <aside id="mainDrawer" class="drawer" aria-hidden="true" inert role="dialog" aria-label="Sepet">
     <div class="drawer__backdrop" data-close-drawer></div>
     <div class="drawer__panel">
       <header class="drawer__header">
-        <h3 class="h4" id="drawerTitle">Sepet</h3>
-        <button class="icon-btn" data-close-drawer aria-label="Kapat">✕</button>
+        <strong>Sepet</strong>
       </header>
-      <div class="drawer__body">
-        <!-- Teslimat/mağaza metni -->
+      <div id="cartBody" class="drawer__body"><!-- JS doldurur --></div>
+      <footer class="drawer__footer">
         <label class="control">
-          <span>Teslimat / Mağaza</span>
-          <input id="storeNameInput" type="text" placeholder="Mağaza/şube adı veya teslim notu">
+          <span>Teslimat / Mağaza Adı (opsiyonel)</span>
+          <input id="storeNameInput" type="text" placeholder="Örn. Beşiktaş Şubesi">
         </label>
-
-        <div id="cartBody"></div>
-      </div>
-      <footer class="drawer__footer" id="buyerFooter">
-        <div class="calc">
-          <div>Toplam</div>
-          <div><strong id="cartTotalPrice">₺0,00</strong></div>
+        <div class="row">
+          <strong>Toplam</strong>
+          <strong id="cartTotalPrice">₺0,00</strong>
         </div>
-        <button id="confirmOrderBtn" class="btn btn--primary">Onayla</button>
-        <span class="muted fs-sm">Ödeme alınmaz; üreticiye bildirim gider ve durum takibi başlar.</span>
+        <div class="row">
+          <button class="btn" data-close-drawer>Kapat</button>
+          <button id="confirmOrderBtn" class="btn btn--primary">Siparişi Onayla</button>
+        </div>
       </footer>
     </div>
   </aside>
 
-  <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
+  <!-- Miktar Modal -->
+  <section id="qtyModal" class="modal" aria-hidden="true" inert role="dialog" aria-label="Miktar Seç">
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__panel">
+      <header class="modal__header">
+        <strong id="qtyName" class="modal__name">Ürün</strong>
+      </header>
+      <div class="modal__body">
+        <div class="modal__product">
+          <img id="qtyImg" src="" alt="">
+          <div>
+            <div id="qtyDesc" class="modal__desc"></div>
+            <div class="calc"><span id="qtyUnitPrice">₺0,00</span><span id="qtyLineTotal">₺0,00</span></div>
+          </div>
+        </div>
+        <div class="note">Stok: <span id="qtyStockText"></span></div>
+        <label class="control">
+          <span>Miktar (gram): <strong id="qtyLabel">100</strong> g (<span id="qtyKg">0.10</span> kg)</span>
+          <input id="qtyRange" type="range" min="100" max="5000" step="100" value="100">
+        </label>
+        <div id="qtyWarn" class="note warn is-hidden">Seçilen miktar stoktan fazla. Üretim süresi değerlendirilecektir.
+        </div>
+      </div>
+      <footer class="modal__footer">
+        <button class="btn" data-close-modal>Vazgeç</button>
+        <button id="addToCartBtn" class="btn btn--primary">Sepete Ekle</button>
+      </footer>
+    </div>
+  </section>
 
-  <footer class="site-footer container">
-    <small>© <span id="year"></span> Kahve • Demo</small>
-  </footer>
+  <!-- Toast -->
+  <div id="toast" class="toast" aria-live="polite"></div>
 
+  <!-- Env (opsiyonel) -->
+  <script src="env.js"></script>
+  <!-- Supabase (opsiyonel) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- App -->
   <script src="assets/js/app.js"></script>
 </body>
 

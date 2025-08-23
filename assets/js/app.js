@@ -1,5 +1,5 @@
-// ====== Basit yardımcılar ======
-const $  = (s, c=document)=>c.querySelector(s);
+// ===== Helpers =====
+const $ = (s, c=document)=>c.querySelector(s);
 const $$ = (s, c=document)=>Array.from(c.querySelectorAll(s));
 const root = document.documentElement;
 const fmtTL = n => (n||0).toLocaleString('tr-TR',{style:'currency',currency:'TRY',maximumFractionDigits:2});
@@ -9,28 +9,7 @@ const normalizePhone = p => String(p||'').replace(/\D/g,'');
 const genId = ()=> 'p-' + Math.random().toString(36).slice(2,10);
 const titleize = (s='') => s.replace(/\s+/g,' ').trim();
 
-function renderCustomerBar(){
-  const bar = $('#customerBar'); if(!bar) return;
-  const s = getSession();
-  if(s?.role === 'buyer'){
-    bar.innerHTML = `<span class="customer-id">Müşteri: <strong>${s.phone}</strong></span>`;
-    bar.classList.remove('is-hidden');
-  }else{
-    bar.classList.add('is-hidden');
-    bar.innerHTML = '';
-  }
-}
-
-// Sabit, tek tip placeholder (görsel yoksa hep bu gösterilir)
-const DEFAULT_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400">
-  <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#2b2f36"/><stop offset="1" stop-color="#1f2329"/></linearGradient></defs>
-  <rect width="100%" height="100%" fill="url(#g)"/>
-  <g fill="#8a94a7"><path d="M320 140c-30 0-54 24-54 54s24 54 54 54 54-24 54-54-24-54-54-54zm0 24c17 0 30 13 30 30s-13 30-30 30-30-13-30-30 13-30 30-30z"/></g>
-  <text x="320" y="350" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#b4bcc9">Ürün görseli yok</text>
-</svg>`);
-
-// ====== Tema ======
+// ===== Theme =====
 const themeToggle = $('#themeToggle');
 function setTheme(mode){ if(mode==='light'||mode==='dark'){root.setAttribute('data-theme',mode);} else root.removeAttribute('data-theme'); localStorage.setItem('theme',mode); renderThemeIcon(); }
 function renderThemeIcon(){ const m=localStorage.getItem('theme')||'dark'; const i=themeToggle?.querySelector('.icon'); if(i){ i.textContent = m==='light'?'☀︎':'☾'; } if(themeToggle){ themeToggle.setAttribute('aria-label',`Temayı değiştir (${m==='light'?'Koyu':'Açık'})`); } }
@@ -38,11 +17,21 @@ themeToggle?.addEventListener('click',()=>{ const cur=localStorage.getItem('them
 setTheme(localStorage.getItem('theme')||'dark');
 $('#year') && ($('#year').textContent = new Date().getFullYear());
 
-// ====== Toast ======
+// ===== Toast =====
 const toastEl = $('#toast');
 function toast(msg, type='ok', t=2600){ const n = document.createElement('div'); n.className = `t ${type}`; n.textContent = msg; toastEl.appendChild(n); setTimeout(()=> n.remove(), t); }
 
-// ====== Varsayılan ürünler (örnek içerik - kategori & açıklama dâhil) ======
+// ===== Placeholder image (no auto lookup) =====
+const DEFAULT_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400">
+  <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#2b2f36"/><stop offset="1" stop-color="#1f2329"/></linearGradient></defs>
+  <rect width="100%" height="100%" fill="url(#g)"/>
+  <g fill="#8a94a7"><path d="M320 140c-30 0-54 24-54 54s24 54 54 54 54-24 54-54-24-54-54-54zm0 24c17 0 30 13 30 30s-13 30-30 30-30-13-30-30 13-30 30-30z"/></g>
+  <text x="320" y="350" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#b4bcc9">Ürün görseli yok</text>
+</svg>`);
+const productImage = p => p.imgDataUrl ? p.imgDataUrl : DEFAULT_IMG;
+
+// ===== Default products =====
 const DEFAULT_PRODUCTS = [
   { name:'Etiyopya Yirgacheffe',           cat:'afrika',  price:950,  stock:5000, desc:'Çiçeksi, narenciye; hafif gövde.' },
   { name:'Kenya AA',                        cat:'afrika',  price:980,  stock:4000, desc:'Siyah frenk üzümü, limon; canlı asidite.' },
@@ -58,15 +47,10 @@ const DEFAULT_PRODUCTS = [
   { name:'Yemen Mocha',                     cat:'ozel',    price:2100, stock:1800, desc:'Şarap benzeri gövde, kakao.' },
 ];
 
-// ====== Katalog Store (Array tabanlı) ======
-/*
-  Ürün modelimiz:
-  { id: 'p-xxxxxx', name: string, cat: 'afrika'|'amerika'|'asya'|'ozel',
-    price: number, stock: number (gram), desc: string, imgDataUrl?: string }
-*/
+// ===== Catalog Store (Array) =====
+/* Product: { id, name, cat, price, stock, desc, imgDataUrl } */
 function loadCatalog(){
   const raw = localStorage.getItem('catalog');
-  // İlk kez: varsayılanları array olarak kur
   if(!raw){
     const arr = DEFAULT_PRODUCTS.map(p=> ({ id: genId(), ...p, imgDataUrl:'' }));
     localStorage.setItem('catalog', JSON.stringify(arr));
@@ -74,27 +58,15 @@ function loadCatalog(){
   }
   try{
     const data = JSON.parse(raw);
-    // Eski sürümden gelebilecek object→array göçü
     if(!Array.isArray(data)){
-      const arr = Object.entries(data).map(([/*oldKey*/, val])=>{
-        if(typeof val === 'number'){ // çok eski: sadece fiyat
-          return { id: genId(), name:'Yeni Ürün', cat:'ozel', price:val, stock:3000, desc:'', imgDataUrl:'' };
-        }
-        return { id: genId(), name: val.name || 'Yeni Ürün', cat: val.cat || 'ozel', price:+val.price||0, stock:+val.stock||0, desc:val.desc||'', imgDataUrl: val.imgDataUrl||'' };
+      const arr = Object.values(data).map(val=>{
+        if(typeof val === 'number') return { id:genId(), name:'Yeni Ürün', cat:'ozel', price:val, stock:3000, desc:'', imgDataUrl:'' };
+        return { id:genId(), name:val.name||'Yeni Ürün', cat:val.cat||'ozel', price:+val.price||0, stock:+val.stock||0, desc:val.desc||'', imgDataUrl:val.imgDataUrl||'' };
       });
       localStorage.setItem('catalog', JSON.stringify(arr));
       return arr;
     }
-    // Array ise alanları garanti altına al
-    return data.map(p=> ({
-      id: p.id || genId(),
-      name: p.name || 'Yeni Ürün',
-      cat:  p.cat  || 'ozel',
-      price: +p.price || 0,
-      stock: Math.max(0, +p.stock || 0),
-      desc:  p.desc || '',
-      imgDataUrl: p.imgDataUrl || ''
-    }));
+    return data.map(p=> ({ id:p.id||genId(), name:p.name||'Yeni Ürün', cat:p.cat||'ozel', price:+p.price||0, stock:Math.max(0,+p.stock||0), desc:p.desc||'', imgDataUrl:p.imgDataUrl||'' }));
   }catch{
     const arr = DEFAULT_PRODUCTS.map(p=> ({ id: genId(), ...p, imgDataUrl:'' }));
     localStorage.setItem('catalog', JSON.stringify(arr));
@@ -104,10 +76,7 @@ function loadCatalog(){
 function saveCatalog(arr){ localStorage.setItem('catalog', JSON.stringify(arr)); }
 let CATALOG = loadCatalog();
 
-// ====== Görsel seçimi: sadece yüklenen varsa onu kullan, yoksa sabit placeholder ======
-const productImage = p => p.imgDataUrl ? p.imgDataUrl : DEFAULT_IMG;
-
-// ====== Mağaza kartlarını çiz ======
+// ===== Store grid =====
 let currentFilter = 'all';
 function renderStoreGrid(){
   const grid = $('#cards'); if(!grid) return;
@@ -126,15 +95,13 @@ function renderStoreGrid(){
     grid.appendChild(art);
   });
 }
-
-// Kategori filtreleri
 $$('[data-filter]').forEach(b=> b.addEventListener('click', ()=>{
   currentFilter = b.getAttribute('data-filter');
   $$('[data-filter]').forEach(x=>x.classList.remove('is-active')); b.classList.add('is-active');
   renderStoreGrid();
 }));
 
-// ====== Auth & Nav ======
+// ===== Auth & Views =====
 const viewAuth = $('#viewAuth'), viewStore = $('#viewStore'), viewDash = $('#viewDashboard'), viewMyOrders = $('#viewMyOrders');
 function showView(id){ [viewAuth,viewStore,viewDash,viewMyOrders].forEach(v=>v?.classList.add('is-hidden')); id?.classList.remove('is-hidden'); }
 const authArea = $('#authArea');
@@ -142,6 +109,17 @@ const authArea = $('#authArea');
 function getSession(){ try{ return JSON.parse(localStorage.getItem('session')||'null'); }catch{ return null; } }
 function setSession(s){ localStorage.setItem('session', JSON.stringify(s)); renderAuthArea(); updatePanelToggle(); }
 function logout(){ localStorage.removeItem('session'); renderAuthArea(); updatePanelToggle(); showView(viewAuth); }
+
+function renderCustomerBar(){
+  const bar = $('#customerBar'); if(!bar) return;
+  const s = getSession();
+  if(s?.role === 'buyer'){
+    bar.innerHTML = `<span class="customer-id">Müşteri: <strong>${s.phone}</strong></span>`;
+    bar.classList.remove('is-hidden');
+  }else{
+    bar.classList.add('is-hidden'); bar.innerHTML='';
+  }
+}
 
 function renderAuthArea(){
   const s = getSession();
@@ -155,13 +133,12 @@ function renderAuthArea(){
     authArea.appendChild(btn);
     $('#panelLabel') && ($('#panelLabel').textContent = 'Sepet');
     if(btnPanel) btnPanel.title = 'Sepet';
-    renderCustomerBar(); // gizle
+    renderCustomerBar();
     showView(viewAuth);
     return;
   }
 
   if(s.role==='buyer'){
-    // Müşteri numarası customerBar’da; burada sadece butonlar
     const ordersBtn = document.createElement('button'); ordersBtn.className='btn btn--ghost'; ordersBtn.textContent='Siparişlerim';
     ordersBtn.addEventListener('click', ()=>{ renderMyOrders(currentMyOrdersFilter); showView(viewMyOrders); });
 
@@ -176,7 +153,7 @@ function renderAuthArea(){
     $('#panelLabel') && ($('#panelLabel').textContent = 'Sepet');
     if(btnPanel) btnPanel.title = 'Sepet';
 
-    renderCustomerBar();   // numarayı üst panele yaz
+    renderCustomerBar();
     showView(viewStore);
   }else{
     const dashBtn = document.createElement('button'); dashBtn.className='btn btn--ghost'; dashBtn.textContent='Dashboard';
@@ -190,14 +167,12 @@ function renderAuthArea(){
     $('#panelLabel') && ($('#panelLabel').textContent = 'Gelen Siparişler');
     if(btnPanel) btnPanel.title = 'Gelen Siparişler';
 
-    renderCustomerBar();   // üreticide gizle
+    renderCustomerBar();
     selectDashTab('orders'); renderProducerOrdersStatus(currentProdStatus); showView(viewDash);
   }
 }
-
 renderAuthArea();
 
-// Giriş formları
 $$('.auth-tabs .tab').forEach(t=>{
   t.addEventListener('click', ()=>{
     $$('.auth-tabs .tab').forEach(x=>x.classList.remove('is-active'));
@@ -226,7 +201,7 @@ $('#producerLoginBtn')?.addEventListener('click', ()=>{
   }else{ toast('Geçersiz kullanıcı/şifre','err'); }
 });
 
-// ====== Miktar Modalı ======
+// ===== Qty Modal =====
 const qtyModal = $('#qtyModal');
 const qtyRange = $('#qtyRange'), qtyLabel = $('#qtyLabel'), qtyKg = $('#qtyKg'), qtyImg = $('#qtyImg');
 const qtyName = $('#qtyName'), qtyDesc = $('#qtyDesc'), qtyUnitPrice = $('#qtyUnitPrice'), qtyLineTotal = $('#qtyLineTotal');
@@ -239,7 +214,6 @@ function openQtyModal(card, meta){
   qtyName.textContent = meta.name;
   qtyDesc.textContent = meta.desc || card.querySelector('p')?.textContent.trim() || '';
   qtyUnitPrice.textContent = fmtTL(meta.price);
-  // Görsel: karttaki <img> kaynağını kullan (yoksa sabit)
   qtyImg.src = card.querySelector('.card__media img')?.src || DEFAULT_IMG;
 
   qtyStockText.textContent = `${gToKgText(meta.stock)} (${meta.stock} g)`;
@@ -268,7 +242,7 @@ qtyRange?.addEventListener('input', updateQtyLabelsAndTotal);
 $$('[data-close-modal]').forEach(x=> x.addEventListener('click', closeQtyModal));
 document.addEventListener('keydown', e=>{ if(e.key==='Escape' && qtyModal?.getAttribute('aria-hidden')==='false') closeQtyModal(); });
 
-// ====== Sepet/Drawer ======
+// ===== Drawer / Cart =====
 const panelToggle = $('#panelToggle');
 const mainDrawer = $('#mainDrawer');
 const cartBody = $('#cartBody');
@@ -303,7 +277,7 @@ function closeMainDrawer(){
 }
 storeNameInput?.addEventListener('change', ()=> localStorage.setItem('storeName', storeNameInput.value.trim()));
 
-// Sepet store
+// Cart store
 let cart = loadCart();
 function loadCart(){ try{ return JSON.parse(localStorage.getItem('cart')||'[]'); }catch{ return []; } }
 function saveCart(){ localStorage.setItem('cart', JSON.stringify(cart)); renderCart(); updatePanelToggle(); }
@@ -345,12 +319,12 @@ $('#addToCartBtn')?.addEventListener('click', ()=>{
   closeQtyModal(); openMainDrawer();
 });
 
-// ====== Sipariş Store ======
+// ===== Orders store =====
 function loadOrders(){ try{ return JSON.parse(localStorage.getItem('orders')||'[]'); }catch{ return []; } }
 function saveOrders(arr){ localStorage.setItem('orders', JSON.stringify(arr)); updatePanelToggle(); }
 
-// Sipariş oluştur (ödeme yok)
-$('#confirmOrderBtn')?.addEventListener('click', ()=>{
+// Place order
+$('#confirmOrderBtn')?.addEventListener('click', async ()=>{
   const session = getSession();
   if(!session || session.role!=='buyer'){ toast('Sipariş için önce müşteri girişi yapınız.','warn'); showView(viewAuth); return; }
   if(cart.length===0){ toast('Sepet boş.','warn'); return; }
@@ -364,13 +338,15 @@ $('#confirmOrderBtn')?.addEventListener('click', ()=>{
     id: orderId,
     buyerPhone: normalizePhone(session.phone),
     storeName,
-    items: cart, // {id,name,grams,pricePerKg,img,line}
+    items: cart,
     totalPrice: total,
     status: 'pending',
     timeline: [{ s:'pending', t: Date.now() }],
     invoiceDataUrl: null
   };
   const orders = loadOrders(); orders.unshift(order); saveOrders(orders);
+
+  await remoteUpsertOrder(order); // REMOTE (varsa)
 
   const suffix = storeName ? ` • ${storeName}` : '';
   notifySMS('producer', `Yeni sipariş: ${orderId} • ${fmtTL(total)}${suffix}`);
@@ -383,11 +359,11 @@ $('#confirmOrderBtn')?.addEventListener('click', ()=>{
   currentMyOrdersFilter = 'active'; renderMyOrders(currentMyOrdersFilter); showView(viewMyOrders);
 });
 
-// ====== Bildirim (demo) ======
+// Notifications (demo)
 function notifySMS(to, message){ console.log('SMS →', to, message); }
 function notifyInApp(msg){ toast(msg, 'ok'); }
 
-// ====== Müşteri: Siparişlerim ======
+// ===== Buyer: My Orders =====
 let currentMyOrdersFilter = 'active';
 $('#myOrdersTabs')?.addEventListener('click', (e)=>{
   const b = e.target.closest('.tab'); if(!b) return;
@@ -436,7 +412,7 @@ function renderMyOrders(filter='active'){
   });
 }
 
-// ====== Üretici: Dashboard sekmeleri ======
+// ===== Producer: Dashboard =====
 const dashTabs = $('#dashTabs');
 dashTabs?.addEventListener('click', (e)=>{
   const b = e.target.closest('.tab'); if(!b) return;
@@ -458,7 +434,7 @@ function selectDashTab(which='orders'){
   }
 }
 
-// ====== Üretici: Sipariş listesi ======
+// Orders status tabs
 let currentProdStatus = 'pending';
 const ordersStatusTabs = $('#ordersStatusTabs');
 ordersStatusTabs?.addEventListener('click', (e)=>{
@@ -510,45 +486,42 @@ function renderProducerOrdersStatus(status='pending'){
     box.appendChild(card);
   });
 
-  $$('[data-apply-status]').forEach(b=> b.addEventListener('click', ()=>{
+  $$('[data-apply-status]').forEach(b=> b.addEventListener('click', async ()=>{
     const id = b.getAttribute('data-apply-status'); const sel = document.querySelector(`select[data-status-for="${id}"]`);
-    if(sel) updateOrderStatus(id, sel.value);
-  }));
-  $$('[data-invoice]').forEach(inp=> inp.addEventListener('change', handleInvoiceUpload));
-}
-
-function updateOrderStatus(id, next){
-  const orders = loadOrders();
-  const o = orders.find(x=>x.id===id); if(!o) return;
-  if(o.status === next){ toast('Durum değişmedi.','warn'); return; }
-  o.status = next; o.timeline.push({ s:next, t: Date.now() });
-  saveOrders(orders);
-  notifySMS(o.buyerPhone, `Sipariş ${id} durumu: ${labelStatus(next)}`);
-  notifyInApp(`Sipariş ${id} ${labelStatus(next)}.`);
-  renderProducerOrdersStatus(currentProdStatus);
-  if(getSession()?.role==='buyer'){ renderMyOrders(currentMyOrdersFilter); }
-}
-
-// Fatura yükleme
-function handleInvoiceUpload(e){
-  const file = e.target.files?.[0]; if(!file) return;
-  if(file.type!=='application/pdf'){ toast('PDF seçiniz','warn'); return; }
-  const id = e.target.getAttribute('data-invoice');
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    const dataUrl = reader.result;
+    if(!sel) return;
     const orders = loadOrders();
     const o = orders.find(x=>x.id===id); if(!o) return;
-    o.invoiceDataUrl = dataUrl; saveOrders(orders);
-    toast('Fatura yüklendi.');
+    if(o.status === sel.value){ toast('Durum değişmedi.','warn'); return; }
+    o.status = sel.value; o.timeline.push({ s:o.status, t: Date.now() });
+    saveOrders(orders);
+    await remoteUpdateStatus(o); // REMOTE
+    notifySMS(o.buyerPhone, `Sipariş ${id} durumu: ${labelStatus(o.status)}`);
+    notifyInApp(`Sipariş ${id} ${labelStatus(o.status)}.`);
     renderProducerOrdersStatus(currentProdStatus);
-    notifySMS(o.buyerPhone, `Sipariş ${id} faturası hazır.`);
-    if(getSession()?.role==='buyer'){ renderMyOrders(currentMyOrdersFilter); }
-  };
-  reader.readAsDataURL(file);
+    const s = getSession(); if(s?.role==='buyer'){ renderMyOrders(currentMyOrdersFilter); }
+  }));
+
+  $$('[data-invoice]').forEach(inp=> inp.addEventListener('change', async (e)=>{
+    const file = e.target.files?.[0]; if(!file) return;
+    if(file.type!=='application/pdf'){ toast('PDF seçiniz','warn'); return; }
+    const id = e.target.getAttribute('data-invoice');
+    const reader = new FileReader();
+    reader.onload = async ()=>{
+      const dataUrl = reader.result;
+      const orders = loadOrders();
+      const o = orders.find(x=>x.id===id); if(!o) return;
+      o.invoiceDataUrl = dataUrl; saveOrders(orders);
+      toast('Fatura yüklendi.');
+      await remoteUpdateInvoice(o); // REMOTE
+      renderProducerOrdersStatus(currentProdStatus);
+      notifySMS(o.buyerPhone, `Sipariş ${id} faturası hazır.`);
+      const s = getSession(); if(s?.role==='buyer'){ renderMyOrders(currentMyOrdersFilter); }
+    };
+    reader.readAsDataURL(file);
+  }));
 }
 
-// ====== Katalog UI ======
+// ===== Catalog UI (table + mobile cards) =====
 function renderCatalogTable(){
   const wrap = $('#catalogTableWrap'); if(!wrap) return; wrap.innerHTML='';
   const table = document.createElement('table'); table.className='table';
@@ -599,7 +572,6 @@ function renderCatalogTable(){
       const id = btn.getAttribute('data-del');
       if(!confirm('Bu ürünü silmek istiyor musun?')) return;
       CATALOG = CATALOG.filter(p=> p.id!==id);
-      // Sepetten de kaldır
       cart = cart.filter(i=> i.id!==id); saveCart();
       saveCatalog(CATALOG);
       renderCatalogUI();
@@ -608,7 +580,7 @@ function renderCatalogTable(){
     });
   });
 
-  // Alan değişiklikleri → kaydet
+  // Alan değişiklikleri
   $$('tbody tr', table).forEach(tr=>{
     const id = tr.getAttribute('data-id');
     const inputs = $$('input,select', tr);
@@ -662,7 +634,6 @@ function renderCatalogTable(){
   });
 }
 
-// Mobil kart görünümü
 function renderCatalogCards(){
   const wrap = $('#catalogCardsWrap'); if(!wrap) return; wrap.innerHTML='';
   const list = [...CATALOG].sort((a,b)=> a.name.localeCompare(b.name,'tr'));
@@ -716,7 +687,7 @@ function renderCatalogCards(){
     wrap.appendChild(card);
   });
 
-  // Değişiklikleri kaydet
+  // Değişiklikler
   wrap.addEventListener('change', (e)=>{
     const card = e.target.closest('.catalog-card'); if(!card) return;
     const id = card.dataset.id;
@@ -776,11 +747,7 @@ function renderCatalogCards(){
   });
 }
 
-// Her iki katalog UI'sini birlikte güncelle
-function renderCatalogUI(){
-  renderCatalogTable();   // masaüstü
-  renderCatalogCards();   // mobil
-}
+function renderCatalogUI(){ renderCatalogTable(); renderCatalogCards(); }
 
 // Yeni ürün ekle
 $('#addProductBtn')?.addEventListener('click', ()=>{
@@ -795,7 +762,6 @@ $('#addProductBtn')?.addEventListener('click', ()=>{
   CATALOG.push({ id:genId(), name:titleize(name), cat, price, stock, desc, imgDataUrl:'' });
   saveCatalog(CATALOG);
 
-  // Formu temizle
   $('#newName').value=''; $('#newPrice').value='0'; $('#newStock').value='0'; $('#newDesc').value='';
   $('#newCat').value='ozel';
 
@@ -804,13 +770,12 @@ $('#addProductBtn')?.addEventListener('click', ()=>{
   toast('Ürün eklendi.');
 });
 
-// Kataloğu kaydet (değişiklikler zaten anlık kaydoluyor)
 $('#saveCatalogBtn')?.addEventListener('click', ()=>{
   saveCatalog(CATALOG);
   const note = $('#catalogSavedNote'); if(note){ note.textContent = 'Kaydedildi.'; setTimeout(()=> note.textContent='', 1500); }
 });
 
-// ====== Panel rozeti ======
+// Panel badge
 function activeOrderCount(){ return loadOrders().filter(o=> o.status!=='delivered').length; }
 function updatePanelToggle(){
   const s = getSession(); const badge = $('#panelBadge');
@@ -820,7 +785,7 @@ function updatePanelToggle(){
 }
 updatePanelToggle();
 
-// ====== Storage senkronu ======
+// Storage sync
 window.addEventListener('storage', (e)=>{
   if(e.key === 'orders'){
     const s = getSession();
@@ -833,7 +798,6 @@ window.addEventListener('storage', (e)=>{
   }
 });
 
-// ====== Varsayılan ilk görünüm ======
 function selectFirstView(){
   const s = getSession();
   if(s?.role==='buyer'){ showView(viewStore); }
@@ -841,16 +805,123 @@ function selectFirstView(){
   else showView(viewAuth);
 }
 
-// ====== Init ======
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', ()=>{
-    renderStoreGrid();
-    selectFirstView();
-  }, { once:true });
-} else {
-  renderStoreGrid();
-  selectFirstView();
+// ===== REMOTE (Supabase) – otomatik opsiyonel =====
+const SUPABASE_URL = (window.ENV && window.ENV.SUPABASE_URL) || '';
+const SUPABASE_ANON_KEY = (window.ENV && window.ENV.SUPABASE_ANON_KEY) || '';
+const SB = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase)
+  ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+async function remoteUpsertOrder(order){
+  if(!SB) return;
+  const header = {
+    id: order.id,
+    buyer_phone: order.buyerPhone,
+    store_name: order.storeName || null,
+    total_price: order.totalPrice,
+    status: order.status,
+    timeline: order.timeline,
+    invoice_url: order.invoiceDataUrl || null,
+    created_at: new Date(order.timeline?.[0]?.t || Date.now()).toISOString(),
+  };
+  await SB.from('orders').upsert(header, { onConflict: 'id' });
+
+  await SB.from('order_items').delete().eq('order_id', order.id);
+  const rows = (order.items||[]).map(i=>({
+    order_id: order.id,
+    name: i.name,
+    grams: i.grams,
+    price_per_kg: i.pricePerKg,
+    line: i.line,
+    img_url: i.img || null
+  }));
+  if(rows.length) await SB.from('order_items').insert(rows);
+}
+async function remoteUpdateStatus(order){
+  if(!SB) return;
+  await SB.from('orders').update({ status: order.status, timeline: order.timeline }).eq('id', order.id);
+}
+async function remoteUpdateInvoice(order){
+  if(!SB) return;
+  await SB.from('orders').update({ invoice_url: order.invoiceDataUrl }).eq('id', order.id);
+}
+async function remoteFetchAllOrders(){
+  if(!SB) return [];
+  const { data } = await SB.from('orders').select('*').order('created_at', { ascending:false });
+  return (data||[]).map(r=>({
+    id: r.id,
+    buyerPhone: r.buyer_phone,
+    storeName: r.store_name || '',
+    items: [],
+    totalPrice: r.total_price,
+    status: r.status,
+    timeline: r.timeline || [],
+    invoiceDataUrl: r.invoice_url || null
+  }));
+}
+async function remoteFetchItemsFor(orderIds){
+  if(!SB || !orderIds.length) return {};
+  const { data } = await SB.from('order_items').select('*').in('order_id', orderIds);
+  const m = {};
+  (data||[]).forEach(r=>{
+    (m[r.order_id] ||= []).push({ name:r.name, grams:r.grams, pricePerKg:r.price_per_kg, line:r.line, img:r.img_url||null });
+  });
+  return m;
+}
+async function initRealtimeSync(){
+  if(!SB) return;
+
+  // İlk yükleme
+  const headers = await remoteFetchAllOrders();
+  const ids = headers.map(h=>h.id);
+  const itemsMap = await remoteFetchItemsFor(ids);
+  const merged = headers.map(h=> ({ ...h, items: itemsMap[h.id] || [] }));
+  localStorage.setItem('orders', JSON.stringify(merged));
+
+  updatePanelToggle();
+  const s = getSession();
+  if(s?.role==='producer'){ renderProducerOrdersStatus(currentProdStatus); }
+  if(s?.role==='buyer'){ renderMyOrders(currentMyOrdersFilter); }
+
+  // Realtime
+  SB.channel('orders-rt')
+    .on('postgres_changes', { event:'*', schema:'public', table:'orders' }, async (payload)=>{
+      const id = payload.new?.id || payload.old?.id;
+      if(!id) return;
+      const { data: hdr } = await SB.from('orders').select('*').eq('id', id).single();
+      const { data: it }  = await SB.from('order_items').select('*').eq('order_id', id);
+      const o = {
+        id: hdr.id,
+        buyerPhone: hdr.buyer_phone,
+        storeName: hdr.store_name || '',
+        items: (it||[]).map(r=>({ name:r.name, grams:r.grams, pricePerKg:r.price_per_kg, line:r.line, img:r.img_url||null })),
+        totalPrice: hdr.total_price,
+        status: hdr.status,
+        timeline: hdr.timeline || [],
+        invoiceDataUrl: hdr.invoice_url || null
+      };
+      const curr = loadOrders();
+      const ix = curr.findIndex(x=> x.id===id);
+      if(ix>-1) curr[ix]=o; else curr.unshift(o);
+      saveOrders(curr);
+      const s = getSession();
+      if(s?.role==='producer'){ renderProducerOrdersStatus(currentProdStatus); }
+      if(s?.role==='buyer'){ renderMyOrders(currentMyOrdersFilter); }
+    })
+    .subscribe();
 }
 
-// Marka tıkla → mağaza
+// ===== Init =====
+function boot(){
+  renderStoreGrid();
+  selectFirstView();
+  initRealtimeSync(); // Supabase ayarlıysa uzak veriyi açar
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot, { once:true });
+} else {
+  boot();
+}
+
+// Nav brand
 $$('[data-nav="store"]').forEach(a=> a.addEventListener('click', e=>{ e.preventDefault(); showView(viewStore); }));

@@ -23,9 +23,7 @@ body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,
 .brand{display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;color:inherit}
 .brand__logo{width:64px;height:64px;display:block}
 .brand__title{font-weight:700;font-size:var(--fs-600);letter-spacing:.2px}
-.header-bar{
-  width:100%;display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:.25rem
-}
+.header-bar{width:100%;display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:.25rem}
 .auth-area{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 
 /* Buttons */
