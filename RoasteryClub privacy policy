@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RoasteryClub — Privacy Policy / Gizlilik Politikası</title>
+  <meta name="description" content="RoasteryClub Privacy Policy (EN) / Gizlilik Politikası (TR)">
+  <style>
+    :root{--bg:#0f1115;--panel:#151922;--text:#e7eaf0;--muted:#9aa3af;--accent:#7aa2ff;--border:#252a36;--link:#9ab6ff}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{max-width:880px;margin:0 auto;padding:32px 20px}
+    header{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--border)}
+    h1{margin:0;font-size:24px;line-height:1.2}
+    .lang-toggle{display:flex;gap:8px}
+    .lang-toggle button{background:var(--panel);color:var(--text);border:1px solid var(--border);padding:6px 12px;border-radius:8px;cursor:pointer}
+    .lang-toggle button[aria-pressed="true"]{outline:2px solid var(--accent)}
+    section{margin-top:26px}
+    h2{font-size:20px;margin:0 0 8px 0}
+    .hidden{display:none}
+    a{color:var(--link);text-decoration:none}
+    a:hover{text-decoration:underline}
+    footer{margin-top:32px;color:var(--muted);font-size:13px}
+    .muted{color:var(--muted)}
+    noscript{display:block;background:#301818;color:#ffdede;border:1px solid #5a2a2a;padding:10px 12px;border-radius:8px;margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>RoasteryClub — Privacy Policy / Gizlilik Politikası</h1>
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button id="btn-en" type="button" aria-pressed="true" onclick="switchLang('en')">English</button>
+        <button id="btn-tr" type="button" aria-pressed="false" onclick="switchLang('tr')">Türkçe</button>
+      </div>
+    </header>
+
+    <noscript>Bu sayfada dil değiştirmek için JavaScript gerekir. / JavaScript is required to switch languages.</noscript>
+
+    <!-- English -->
+    <div id="lang-en">
+      <section>
+        <h2>1. Introduction</h2>
+        <p>RoasteryClub (“we”, “our”, or “us”) operates the RoasteryClub mobile application (“App”). This Privacy Policy explains how we collect, use, and protect your information when you use the App.</p>
+        <p class="muted"><strong>Note:</strong> The App currently does not process payments and does not require an email to log in.</p>
+      </section>
+
+      <section>
+        <h2>2. Information We Collect</h2>
+        <ul>
+          <li><strong>Personal Information:</strong> name, phone number</li>
+          <li><strong>Order / Interaction Data:</strong> items added to cart, delivery details (if applicable)</li>
+          <li><strong>Uploaded Content:</strong> invoices (PDF), images you upload</li>
+          <li><strong>Authentication Data:</strong> SMS verification codes</li>
+          <li><strong>Usage Data:</strong> device info, logs, crash reports, analytics</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>3. How We Use Information</h2>
+        <p>To operate and improve the App, verify accounts, provide support, maintain records, and comply with legal obligations.</p>
+      </section>
+
+      <section>
+        <h2>4. Third-Party Services</h2>
+        <p>Firebase Authentication, Firebase Firestore, Firebase Cloud Storage, and Google Analytics for Firebase (each under their own privacy policies).</p>
+      </section>
+
+      <section>
+        <h2>5. Data Retention &amp; Deletion</h2>
+        <p>Data is retained while your account is active. Request deletion at <a href="mailto:husnytarik@outlook.com">husnytarik@outlook.com</a>. After deletion, data is removed unless retention is required by law.</p>
+      </section>
+
+      <section>
+        <h2>6. Security</h2>
+        <p>We apply reasonable safeguards but cannot guarantee 100% security.</p>
+      </section>
+
+      <section>
+        <h2>7. Children’s Privacy</h2>
+        <p>Not directed to children under 13. If such data is found, it will be deleted.</p>
+      </section>
+
+      <section>
+        <h2>8. Changes</h2>
+        <p>Updates will be posted here with a new “Last updated” date.</p>
+      </section>
+
+      <section>
+        <h2>9. Contact</h2>
+        <p>Email: <a href="mailto:husnytarik@outlook.com">husnytarik@outlook.com</a></p>
+      </section>
+    </div>
+
+    <!-- Turkish -->
+    <div id="lang-tr" class="hidden">
+      <section>
+        <h2>1. Giriş</h2>
+        <p>RoasteryClub (“biz”, “bize ait” veya “RoasteryClub”) RoasteryClub mobil uygulamasını (“Uygulama”) işletmektedir. Bu Gizlilik Politikası, Uygulamayı kullandığınızda bilgilerinizi nasıl topladığımızı, kullandığımızı ve koruduğumuzu açıklar.</p>
+        <p class="muted"><strong>Not:</strong> Uygulama şu anda ödeme almamakta ve giriş için e-posta gerektirmemektedir.</p>
+      </section>
+
+      <section>
+        <h2>2. Toplanan Bilgiler</h2>
+        <ul>
+          <li><strong>Kişisel Bilgi:</strong> ad, telefon numarası</li>
+          <li><strong>Sipariş / Etkileşim Verisi:</strong> sepete eklenen ürünler, teslimat bilgileri (varsa)</li>
+          <li><strong>Yüklenen İçerik:</strong> faturalar (PDF), yüklediğiniz görseller</li>
+          <li><strong>Kimlik Doğrulama Verisi:</strong> SMS doğrulama kodları</li>
+          <li><strong>Kullanım Verisi:</strong> cihaz bilgisi, loglar, çökme raporları, analitik</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>3. Bilgilerin Kullanımı</h2>
+        <p>Uygulamayı işletmek ve iyileştirmek, hesapları doğrulamak, destek sağlamak, kayıt tutmak ve yasal yükümlülüklere uymak için.</p>
+      </section>
+
+      <section>
+        <h2>4. Üçüncü Taraf Servisler</h2>
+        <p>Firebase Authentication, Firebase Firestore, Firebase Cloud Storage ve Google Analytics for Firebase (her biri kendi gizlilik politikalarına tabidir).</p>
+      </section>
+
+      <section>
+        <h2>5. Saklama &amp; Silme</h2>
+        <p>Veriler hesabınız aktif olduğu sürece saklanır. Silme talebi için: <a href="mailto:husnytarik@outlook.com">husnytarik@outlook.com</a>. Silme sonrası, kanunen gerekli olmadıkça bilgiler kaldırılır.</p>
+      </section>
+
+      <section>
+        <h2>6. Güvenlik</h2>
+        <p>Makul teknik/idari önlemler uygulanır; ancak %100 güvenlik garanti edilemez.</p>
+      </section>
+
+      <section>
+        <h2>7. Çocukların Gizliliği</h2>
+        <p>Uygulama 13 yaş altına yönelik değildir. Böyle bir veri tespit edilirse silinir.</p>
+      </section>
+
+      <section>
+        <h2>8. Değişiklikler</h2>
+        <p>Güncellemeler bu sayfada “Son güncelleme” tarihiyle yayımlanır.</p>
+      </section>
+
+      <section>
+        <h2>9. İletişim</h2>
+        <p>E-posta: <a href="mailto:husnytarik@outlook.com">husnytarik@outlook.com</a></p>
+      </section>
+    </div>
+
+    <footer>
+      <p class="muted">© RoasteryClub — Last updated: <strong>September 16, 2025</strong></p>
+    </footer>
+  </div>
+
+  <script>
+    (function initLang(){
+      try{
+        const saved = localStorage.getItem('rc_lang');
+        if(saved){ setLang(saved); return; }
+        const pref = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+        setLang(pref.startsWith('tr') ? 'tr' : 'en');
+      }catch(e){ setLang('en'); }
+    })();
+
+    function setLang(lang){
+      const en = document.getElementById('lang-en');
+      const tr = document.getElementById('lang-tr');
+      const btnEn = document.getElementById('btn-en');
+      const btnTr = document.getElementById('btn-tr');
+      if(!en || !tr) return;
+      if(lang === 'tr'){
+        en.classList.add('hidden');
+        tr.classList.remove('hidden');
+        if(btnEn) btnEn.setAttribute('aria-pressed','false');
+        if(btnTr) btnTr.setAttribute('aria-pressed','true');
+        document.documentElement.lang = 'tr';
+      }else{
+        tr.classList.add('hidden');
+        en.classList.remove('hidden');
+        if(btnEn) btnEn.setAttribute('aria-pressed','true');
+        if(btnTr) btnTr.setAttribute('aria-pressed','false');
+        document.documentElement.lang = 'en';
+      }
+    }
+
+    function switchLang(lang){
+      try{ localStorage.setItem('rc_lang', lang); }catch(e){}
+      setLang(lang);
+    }
+  </script>
+</body>
+</html>
